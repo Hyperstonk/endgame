@@ -1,0 +1,30 @@
+{
+  "name": "@endgame/calvin",
+  "version": "0.0.0",
+  "description": "Changing Any Lifeless Value Into Notifications",
+  "repository": "Alphability/endgame",
+  "author": "Alphability <albanmezino@gmail.com> (https://albanmezino.com)",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/*.js",
+    "dist/*.js.map",
+    "dist/*.d.ts"
+  ],
+  "scripts": {
+    "watch": "tsc -w",
+    "test": "jest __tests__ --collectCoverage --runInBand",
+    "test:watch": "jest __tests__ --watchAll --runInBand",
+    "prepare": "yarn snyk-protect",
+    "snyk-protect": "snyk protect"
+  },
+  "devDependencies": {
+    "snyk": "^1.508.0"
+  },
+  "dependencies": {},
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT",
+  "snyk": true
+}
