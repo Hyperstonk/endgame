@@ -1,9 +1,10 @@
 import { Calvin } from '@endgame/calvin';
 export declare class Eva {
-  private _dampeningTransitions;
   private _reactor;
+  private _dampeningTransitions;
+  private _resizeEndDelay;
   constructor();
-  private _harvestWindowValues;
+  private _collectWindowValues;
   private _resizeEventHandler;
   private _dampTransitions;
   private _resizeEnd;

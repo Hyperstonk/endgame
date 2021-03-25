@@ -9,7 +9,7 @@ export class Eva {
    * @memberof Eva
    */
 
-  private _reactor: Calvin | null;
+  private _reactor: Calvin;
 
   /**
    * @description Boolean used to allow elements resize transitions dampening.
@@ -44,10 +44,6 @@ export class Eva {
    * @memberof Eva
    */
   private _collectWindowValues(): void {
-    if (!this._reactor) {
-      return;
-    }
-
     this._reactor.data.width = window.innerWidth;
     this._reactor.data.height = window.innerHeight;
   }
@@ -135,7 +131,6 @@ export class Eva {
    */
   public destroy(): void {
     this._detachListeners();
-    this._reactor = null;
   }
 
   /**
@@ -144,11 +139,7 @@ export class Eva {
    * @type {Calvin}
    * @memberof Eva
    */
-  get viewport(): Calvin | void {
-    if (!this._reactor) {
-      return;
-    }
-
+  get viewport(): Calvin {
     return this._reactor;
   }
 }

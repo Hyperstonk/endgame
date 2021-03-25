@@ -5,6 +5,7 @@ const pkg = require('./package.json');
 
 module.exports = {
   ...base,
+  testEnvironment: 'jsdom',
   name: pkg.name,
   displayName: pkg.name,
 };

@@ -1,10 +1,19 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Calvin = void 0;
+/*!
+ * @endgame/calvin v0.0.0 © 2021-2021
+ * Spacefold.
+ * All Rights Reserved.
+ * Repository: https://github.com/Alphability/spacefold
+ * Website: https://spacefold.vision
+*/
+'use strict';
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
 class Calvin {
     constructor(data) {
         this._data = {};
         this._watchers = {};
+        this._setComputed = false;
         this._currentDependent = '';
         this._dependencies = {};
         this._computedFunctions = {};
@@ -16,22 +25,25 @@ class Calvin {
                 const [, property] = args;
                 if (this._currentDependent) {
                     this._depend(property);
+                    this._currentDependent = '';
                 }
                 return Reflect.get(...args);
             },
             set: (...args) => {
                 const [target, property, value, receiver] = args;
-                if (this._computedFunctions.hasOwnProperty(property)) {
+                if (this._setComputed &&
+                    this._computedFunctions.hasOwnProperty(property)) {
                     this._currentDependent = property;
                     target[property] = this._computedFunctions[property].call(receiver);
                     this._notify(property, target[property]);
+                    this._setComputed = false;
                 }
-                else {
+                else if (!this._computedFunctions.hasOwnProperty(property)) {
                     target[property] = value;
                     this._notify(property, value);
-                    if (this._dependencies.hasOwnProperty(property)) {
-                        this._updateDependents(property);
-                    }
+                }
+                if (this._dependencies.hasOwnProperty(property)) {
+                    this._updateDependents(property);
                 }
                 return true;
             },
@@ -52,6 +64,7 @@ class Calvin {
     }
     _updateDependents(property) {
         this._dependencies[property].forEach((dependent) => {
+            this._setComputed = true;
             this._data[dependent] = null;
         });
     }
@@ -60,6 +73,7 @@ class Calvin {
             this._computedFunctions[property] = [];
         }
         this._computedFunctions[property] = computed;
+        this._setComputed = true;
         this._data[property] = null;
     }
     _observe(property, watcher) {
@@ -86,5 +100,6 @@ class Calvin {
         return this._data;
     }
 }
+
 exports.Calvin = Calvin;
 //# sourceMappingURL=index.js.map
