@@ -1,11 +1,3 @@
-# Ensure built files are included
-!/packages/*/dist/
-
-.spacefoldrc
-/jest-coverage
-**/jest-coverage
-/__test-*
-
 yarn.lock
 
 ### Node ###
@@ -110,3 +102,10 @@ coverage
 
 # Yarn Integrity file
 .yarn-integrity
+
+
+# Ensure built files are included
+# !/packages/*/dist/
+
+# Ignore packages dist directories
+/packages/**/dist/
