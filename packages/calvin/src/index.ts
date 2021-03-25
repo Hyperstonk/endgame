@@ -1,7 +1,8 @@
 /* eslint-disable no-unused-vars */
 type Watcher = (val: any) => void;
+
+type Computed = (this: Record<string, any>) => any;
 /* eslint-enable no-unused-vars */
-type Computed = () => any;
 
 export class Calvin {
   /**
@@ -19,6 +20,13 @@ export class Calvin {
    * @memberof Calvin
    */
   private _watchers: Record<string, any> = {};
+
+  /**
+   * @description State used to avoid external call to computed properties setters
+   * @private
+   * @memberof Calvin
+   */
+  private _setComputed = false;
 
   /**
    * @description Variable used to keep track of the computed property that we need to register as a dependency of another reactive property.
@@ -71,6 +79,9 @@ export class Calvin {
           // Registering the current dependent (computed property) as a dependence of the retrived data
           // Casting property into string because we cannot (yet) use symbols as type index.
           this._depend(<string>property);
+
+          // Resetting the current dependent
+          this._currentDependent = '';
         }
 
         return Reflect.get(...args);
@@ -79,7 +90,11 @@ export class Calvin {
         // The receiver is the proxy itself
         const [target, property, value, receiver] = args;
 
-        if (this._computedFunctions.hasOwnProperty(property)) {
+        // Avoiding external call to setter by checking if _setComputed is truthy
+        if (
+          this._setComputed &&
+          this._computedFunctions.hasOwnProperty(property)
+        ) {
           // Defining the computed property as the current dependent that we'll handle
           this._currentDependent = property;
 
@@ -92,18 +107,20 @@ export class Calvin {
           // Call involved watchers
           // Casting property into string because we cannot (yet) use symbols as type index.
           this._notify(<string>property, target[<string>property]);
-        } else {
+
+          this._setComputed = false;
+        } else if (!this._computedFunctions.hasOwnProperty(property)) {
           // Setting the data value
           target[<string>property] = value;
 
           // Call involved watchers
           // Casting property into string because we cannot (yet) use symbols as type index.
           this._notify(<string>property, value);
+        }
 
-          // Updating the computed properties that depend on the current data
-          if (this._dependencies.hasOwnProperty(property)) {
-            this._updateDependents(<string>property);
-          }
+        // Updating the computed properties that depend on the current property
+        if (this._dependencies.hasOwnProperty(property)) {
+          this._updateDependents(<string>property);
         }
 
         // Indicates that the setter ran successfully
@@ -155,6 +172,7 @@ export class Calvin {
   private _updateDependents(property: string): void {
     this._dependencies[property].forEach((dependent: string) => {
       // Forcing to calculate the computed value
+      this._setComputed = true;
       this._data[dependent] = null;
     });
   }
@@ -176,6 +194,7 @@ export class Calvin {
     this._computedFunctions[property] = computed;
 
     // Forcing to calculate the computed value
+    this._setComputed = true;
     this._data[property] = null;
   }
 
@@ -222,10 +241,6 @@ export class Calvin {
         this._observe(property, watchers[property]);
       }
     }
-  }
-
-  public destroy(): void {
-    this._data = null;
   }
 
   /**
