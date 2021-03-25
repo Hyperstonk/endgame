@@ -13,20 +13,21 @@
     "packages/*"
   ],
   "scripts": {
+    "postinstall": "lerna link",
+    "snyk-protect": "snyk protect",
+    "prepare": "yarn snyk-protect",
     "link:all": "jiti ./scripts/link.ts",
-    "build": "yarn clean && yarn build:packages",
-    "clean": "yarn clean:build",
-    "clean:build": "rimraf packages/*/dist",
-    "build:packages": "jiti ./scripts/build.ts",
+    "lerna:clean": "lerna clean -y",
+    "lerna:bootstrap": "yarn lerna:clean && yarn lerna bootstrap",
     "lint:ts": "eslint './**/*.ts' --quiet --fix",
     "lint": "yarn lint:ts",
     "test": "lerna run test",
-    "prepare": "yarn snyk-protect",
-    "push": "yarn lerna:bootstrap && lerna publish",
-    "lerna:bootstrap": "yarn lerna:clean && yarn lerna bootstrap",
-    "lerna:clean": "lerna clean -y",
-    "snyk-protect": "snyk protect",
-    "postinstall": "lerna link"
+    "clean:build": "rimraf packages/*/dist",
+    "clean": "yarn clean:build",
+    "build:packages": "jiti ./scripts/build.ts",
+    "build": "yarn clean && yarn build:packages",
+    "version:ci": "lerna version --yes --conventional-commits --create-release github --message 'chore(release): publish'",
+    "publish:ci": "lerna publish from-package --yes"
   },
   "devDependencies": {
     "@babel/core": "7.12.10",

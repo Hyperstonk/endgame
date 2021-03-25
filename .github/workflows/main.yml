@@ -47,11 +47,11 @@ jobs:
       - name: Install packages dependencies 👨🏻‍💻
         run: yarn lerna:bootstrap
 
-      - name: Build packages 🛠
-        run: yarn build
-
       - name: Run linter 👀
         run: yarn lint
 
       - name: Run tests 🧪
         run: yarn test
+
+      - name: Build packages 🛠
+        run: yarn build
