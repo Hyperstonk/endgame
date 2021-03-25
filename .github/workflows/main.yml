@@ -55,3 +55,8 @@ jobs:
 
       - name: Build packages 🛠
         run: yarn build
+
+      - name: Bump versions and publish packages 🚀
+        run: |
+          yarn version:ci
+          yarn publish:ci
