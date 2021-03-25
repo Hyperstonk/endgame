@@ -2,12 +2,29 @@
   "version": "1.0.6-alpha.1",
   "npmClient": "yarn",
   "useWorkspaces": true,
-  "packages": [
-    "packages/*"
-  ],
+  "packages": ["packages/*"],
   "command": {
     "publish": {
-      "verifyAccess": false
+      "verifyAccess": false,
+      "conventionalCommits": true,
+      "createRelease": "github",
+      "message": "chore(release): publish %v",
+      "ignoreChanges": [
+        "**/*.md",
+        "*.md",
+        "**/*.test.ts",
+        ".editorconfig",
+        ".eslintrc.js",
+        ".gitignore",
+        ".huskyrc",
+        ".prettierrc",
+        "babel.config.js",
+        "jest.config.*",
+        "lerna.json",
+        "package.json",
+        "**/package.json",
+        "./.github/**"
+      ]
     }
   }
 }
