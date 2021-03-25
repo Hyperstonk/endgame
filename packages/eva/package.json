@@ -1,6 +1,6 @@
 {
   "name": "@endgame/eva",
-  "version": "1.0.5",
+  "version": "1.0.5-alpha.0",
   "description": "Ease Viewport Access",
   "repository": "Alphability/endgame",
   "author": "Alphability <albanmezino@gmail.com> (https://albanmezino.com)",
@@ -22,7 +22,7 @@
     "snyk": "^1.508.0"
   },
   "dependencies": {
-    "@endgame/calvin": "^1.0.5",
+    "@endgame/calvin": "^1.0.5-alpha.0",
     "lodash": "^4.17.21"
   },
   "publishConfig": {

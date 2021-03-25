@@ -44,17 +44,17 @@ jobs:
       - name: Install workspace dependencies 👨🏻‍💻
         run: yarn
 
-      - name: Install packages dependencies 👨🏻‍💻
-        run: yarn lerna:bootstrap
-
       - name: Run linter 👀
         run: yarn lint
 
-      - name: Run tests 🧪
-        run: yarn test
-
       - name: Build packages 🛠
         run: yarn build
+
+      - name: Install packages dependencies 👨🏻‍💻
+        run: yarn lerna:bootstrap
+
+      - name: Run tests 🧪
+        run: yarn test
 
       - name: Bump versions and publish packages 🚀
         run: |
