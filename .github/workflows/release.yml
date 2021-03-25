@@ -1,4 +1,4 @@
-name: main
+name: Release
 
 on:
   push:
@@ -60,3 +60,5 @@ jobs:
         run: |
           yarn version:ci
           yarn publish:ci
+        env:
+          GH_TOKEN: ${{ secrets.ENDGAME_GITHUB_TOKEN }}
