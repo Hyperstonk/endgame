@@ -1,14 +1,12 @@
-name: Release
+name: Prerelease
 
 on:
   push:
     branches:
-      - main
-      - master
+      - prerelease
   pull_request:
     branches:
-      - main
-      - master
+      - prerelease
 
 jobs:
   ci:
@@ -63,7 +61,7 @@ jobs:
 
       - name: Bump versions and publish packages 🚀
         run: |
-          yarn version:ci --conventional-graduate
+          yarn version:ci --conventional-prerelease
           yarn publish:ci
         env:
           GH_TOKEN: ${{ secrets.ENDGAME_GITHUB_TOKEN }}
