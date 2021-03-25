@@ -45,7 +45,7 @@ jobs:
         run: yarn
 
       - name: Install packages dependencies 👨🏻‍💻
-        run: yarn lerna bootstrap
+        run: yarn lerna:bootstrap
 
       - name: Run linter 👀
         run: yarn lint

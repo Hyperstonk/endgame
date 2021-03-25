@@ -17,6 +17,8 @@
     "snyk-protect": "snyk protect",
     "prepare": "yarn snyk-protect",
     "link:all": "jiti ./scripts/link.ts",
+    "lerna:clean": "lerna clean --yes",
+    "lerna:bootstrap": "yarn lerna:clean && yarn lerna bootstrap",
     "lint:ts": "eslint './**/*.ts' --quiet --fix",
     "lint": "yarn lint:ts",
     "test": "lerna run test",
