@@ -22,7 +22,7 @@
     "snyk": "^1.508.0"
   },
   "dependencies": {
-    "@endgame/calvin": "^0.0.0",
+    "@endgame/calvin": "^1.0.5-alpha.0",
     "lodash": "^4.17.21"
   },
   "publishConfig": {
