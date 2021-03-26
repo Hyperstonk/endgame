@@ -1,4 +1,4 @@
-import { debounce } from 'lodash';
+import debounce from 'lodash/debounce';
 import { Calvin } from '@endgame/calvin';
 
 export class Eva {
