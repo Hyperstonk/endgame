@@ -20,6 +20,7 @@ export interface PackageOptions {
   configPath: string;
   srcFile: string;
   distDir: string;
+  distMain: string;
   build: boolean;
   giveExecutionRights: boolean;
   externals: string[];
@@ -38,6 +39,7 @@ const DEFAULTS = {
   pkgPath: 'package.json',
   configPath: 'package.ts',
   distDir: 'dist',
+  distMain: 'index',
   srcFile: 'src/index.ts',
   build: false,
   giveExecutionRights: false,
@@ -128,8 +130,9 @@ export default class Package {
 
     // Prepare rollup config
     const config = {
-      input: this.options.srcFile,
       rootDir: this.options.rootDir,
+      input: this.options.srcFile,
+      outputFilename: this.options.distMain,
       alias: {},
       replace: {},
       externals,
@@ -192,9 +195,7 @@ export default class Package {
   }
 
   private _giveExecutionRights() {
-    const distFilePath = `${this.options.rootDir}/dist/${basename(
-      this.pkg.name
-    )}.js`;
+    const distFilePath = `${this.options.rootDir}/dist/${this.options.distMain}.js`;
 
     let fileData = fsExtra.readFileSync(distFilePath, {
       encoding: 'utf-8',

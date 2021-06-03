@@ -2,7 +2,7 @@
   "name": "@endgame/eva",
   "version": "1.0.5",
   "description": "Ease Viewport Access",
-  "repository": "Alphability/endgame",
+  "repository": "MBDW-Studio/endgame",
   "author": "Alphability <albanmezino@gmail.com> (https://albanmezino.com)",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

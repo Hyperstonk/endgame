@@ -7,12 +7,8 @@
   },
   "include": [
     "src/**/*",
-    "types"
   ],
   "exclude": [
     "./dist"
-  ],
-  "types":[
-    "./types"
   ],
 }
