@@ -7,7 +7,7 @@
     "url": "git+https://github.com/Alphability/endgame.git"
   },
   "author": "Alphability <albanmezino@gmail.com> (https://albanmezino.com)",
-  "homepage": "https://github.com/Alphability/endgame#readme",
+  "homepage": "https://github.com/MBDW-Studio/endgame#readme",
   "license": "MIT",
   "workspaces": [
     "packages/*"
