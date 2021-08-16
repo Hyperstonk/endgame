@@ -18,7 +18,8 @@
   },
   "devDependencies": {},
   "dependencies": {
-    "@endgame/calvin": "^1.0.5"
+    "@endgame/calvin": "^1.0.5",
+    "lodash": "^4.17.21"
   },
   "publishConfig": {
     "access": "public"

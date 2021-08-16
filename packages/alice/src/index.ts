@@ -1,133 +1,101 @@
 import debounce from 'lodash/debounce';
 import { Calvin } from '@endgame/calvin';
 
-export class Eva {
+export class Alice {
   /**
    * @description Object allowing the use of reactive data.
    * @private
    * @type {Calvin}
-   * @memberof Eva
+   * @memberof Alice
    */
 
   private _reactor: Calvin;
 
   /**
-   * @description Boolean used to allow elements resize transitions dampening.
+   * @description The scroll end delay in ms.
    * @private
-   * @memberof Eva
+   * @memberof Alice
    */
-  private _dampeningTransitions = false;
+  private _scrollEndDelay = 100;
 
   /**
-   * @description The resize end delay in ms.
-   * @private
-   * @memberof Eva
-   */
-  private _resizeEndDelay = 200;
-
-  /**
-   * Creates an instance of Eva.
+   * Creates an instance of Alice.
    * @author Alphability <albanmezino@gmail.com>
-   * @memberof Eva
+   * @memberof Alice
    */
   constructor() {
-    this._resizeEventHandler = this._resizeEventHandler.bind(this);
+    this._scrollEventHandler = this._scrollEventHandler.bind(this);
 
-    // Store default window values before any resize event
-    this._reactor = new Calvin({ width: 0, height: 0 });
+    // Store default window values before any scroll event
+    this._reactor = new Calvin({ scrollTop: 0, isScrolling: false });
   }
 
   /**
-   * @description Collect window object's values.
+   * @description Collect scroll values.
    * @author Alphability <albanmezino@gmail.com>
    * @private
-   * @memberof Eva
+   * @memberof Alice
    */
-  private _collectWindowValues(): void {
-    this._reactor.data.width = window.innerWidth;
-    this._reactor.data.height = window.innerHeight;
+  private _collectEventValues(): void {
+    this._reactor.data.scrollTop = window.scrollY || window.pageYOffset;
   }
 
   /**
-   * @description Resize listener handler.
+   * @description Scroll listener handler.
    * @author Alphability <albanmezino@gmail.com>
    * @private
-   * @memberof Eva
+   * @memberof Alice
    */
-  private _resizeEventHandler(): void {
-    this._dampTransitions();
-    this._resizeEnd();
+  private _scrollEventHandler(): void {
+    this._reactor.data.isScrolling = true;
+    this._collectEventValues();
+    this._scrollEnd();
   }
 
+  private _scrollEnd = debounce(() => {
+    this._reactor.data.isScrolling = false;
+  }, this._scrollEndDelay);
+
   /**
-   * @description Adding a class to the document element when resizing.
+   * @description Hooks onto the scroll event.
    * @author Alphability <albanmezino@gmail.com>
    * @private
-   * @returns {void}
-   * @memberof Eva
-   */
-  private _dampTransitions(): void {
-    if (this._dampeningTransitions) {
-      return;
-    }
-    document.documentElement.classList.add('resizing');
-
-    this._dampeningTransitions = true;
-  }
-
-  /**
-   * @description Handle the resize end with debounce to avoid recalculating window's values too often.
-   * @private
-   * @memberof Eva
-   */
-  private _resizeEnd = debounce(() => {
-    this._collectWindowValues();
-
-    document.documentElement.classList.remove('resizing');
-
-    this._dampeningTransitions = false;
-  }, this._resizeEndDelay);
-
-  /**
-   * @description Hooks onto the resize event.
-   * @author Alphability <albanmezino@gmail.com>
-   * @private
-   * @memberof Eva
+   * @memberof Alice
    */
   private _attachListeners(): void {
-    window.addEventListener('resize', this._resizeEventHandler, {
+    window.addEventListener('scroll', this._scrollEventHandler, {
       passive: true,
     });
   }
 
   /**
-   * @description Unhooks from the resize event.
+   * @description Unhooks from the scroll event.
    * @author Alphability <albanmezino@gmail.com>
    * @private
-   * @memberof Eva
+   * @memberof Alice
    */
   private _detachListeners(): void {
     // ⚡ Avoid memory leak
-    window.removeEventListener('resize', this._resizeEventHandler, false);
+    window.removeEventListener('scroll', this._scrollEventHandler, false);
   }
 
   /**
    * @description Initializing the viewport reactive data abilities when the window object is defined.
    * @author Alphability <albanmezino@gmail.com>
-   * @memberof Eva
+   * @memberof Alice
    */
   public initialize(): void {
-    // Register the resize event
+    // Register the scroll event
     this._attachListeners();
 
-    // Update the reactor viewport data w/ window's values
-    this._collectWindowValues();
+    // Update the reactor viewport data w/ scroll values
+    this._collectEventValues();
   }
 
   /**
    * @description Destroying the reactive data object and listeners.
    * @author Alphability <albanmezino@gmail.com>
-   * @memberof Eva
+   * @memberof Alice
    */
   public destroy(): void {
     this._detachListeners();
@@ -137,9 +105,9 @@ export class Eva {
    * @description Reeactive properties object's getter.
    * @readonly
    * @type {Calvin}
-   * @memberof Eva
+   * @memberof Alice
    */
-  get viewport(): Calvin {
+  get scroll(): Calvin {
     return this._reactor;
   }
 }
