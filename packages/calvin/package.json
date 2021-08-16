@@ -14,16 +14,11 @@
   "scripts": {
     "watch": "tsc -w",
     "test": "jest __tests__ --collectCoverage --runInBand",
-    "test:watch": "jest __tests__ --watchAll --runInBand",
-    "prepare": "yarn snyk-protect",
-    "snyk-protect": "snyk protect"
+    "test:watch": "jest __tests__ --watchAll --runInBand"
   },
-  "devDependencies": {
-    "snyk": "^1.508.0"
-  },
+  "devDependencies": {},
   "publishConfig": {
     "access": "public"
   },
-  "license": "MIT",
-  "snyk": true
+  "license": "MIT"
 }

@@ -1,4 +1,4 @@
-import { basename, resolve } from 'path';
+import { resolve } from 'path';
 import consola, { Consola } from 'consola';
 import spawn from 'cross-spawn';
 import fsExtra from 'fs-extra';

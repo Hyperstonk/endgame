@@ -1,7 +1,7 @@
 {
-  "name": "@endgame/eva",
+  "name": "@endgame/alice",
   "version": "1.0.5",
-  "description": "Ease Viewport Access",
+  "description": "Another Library Implementing Captivating Effects",
   "repository": "MBDW-Studio/endgame",
   "author": "Alphability <albanmezino@gmail.com> (https://albanmezino.com)",
   "main": "dist/index.js",
@@ -18,8 +18,7 @@
   },
   "devDependencies": {},
   "dependencies": {
-    "@endgame/calvin": "^1.0.5",
-    "lodash": "^4.17.21"
+    "@endgame/calvin": "^1.0.5"
   },
   "publishConfig": {
     "access": "public"
