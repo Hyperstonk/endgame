@@ -12,7 +12,7 @@ Then init a `package.json` inside it and change some things (see belows).
   "version": "0.0.0",
   "description": "Add a description",
   "repository": "MBDW-Studio/endgame",
-  "author": "Alphability <albanmezino@gmail.com> (https://albanmezino.com)",
+  "author": "Mental Breakdown <hello@mentalbreakdown.studio> (https://mentalbreakdown.studio)",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": ["dist/*.js", "dist/*.js.map", "dist/*.d.ts"],

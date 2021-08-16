@@ -10,12 +10,15 @@ const main = async () => {
   const workspacePackages = await rootPackage.getWorkspacePackages();
 
   // Build packages
-  for (const pkg of workspacePackages) {
-    if (pkg.options.build) {
-      await pkg.build();
-    }
-    if (pkg.options.giveExecutionRights) {
-      await pkg.giveExecutionRights();
+  for (const packageConfig of workspacePackages) {
+    if (packageConfig.getOptions) {
+      const packageOptions = packageConfig.getOptions();
+      if (packageOptions.build) {
+        await packageConfig.build();
+      }
+      if (packageOptions.giveExecutionRights) {
+        await packageConfig.giveExecutionRights();
+      }
     }
   }
 };

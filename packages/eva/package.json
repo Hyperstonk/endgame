@@ -3,7 +3,7 @@
   "version": "1.0.5",
   "description": "Ease Viewport Access",
   "repository": "MBDW-Studio/endgame",
-  "author": "Alphability <albanmezino@gmail.com> (https://albanmezino.com)",
+  "author": "Mental Breakdown <hello@mentalbreakdown.studio> (https://mentalbreakdown.studio)",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [

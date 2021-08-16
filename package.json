@@ -13,7 +13,7 @@
     "type": "git",
     "url": "git+https://github.com/MBDW-Studio/endgame.git"
   },
-  "author": "Alphability <albanmezino@gmail.com> (https://albanmezino.com)",
+  "author": "Mental Breakdown <hello@mentalbreakdown.studio> (https://mentalbreakdown.studio)",
   "homepage": "https://github.com/MBDW-Studio/endgame#readme",
   "license": "MIT",
   "workspaces": [
