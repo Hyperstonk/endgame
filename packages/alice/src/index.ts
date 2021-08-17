@@ -1,5 +1,7 @@
 import debounce from 'lodash/debounce';
 import { Calvin } from '@endgame/calvin';
+import { Tween } from './tween';
+import { Detect } from './detect';
 
 export class Alice {
   /**
@@ -10,6 +12,24 @@ export class Alice {
    */
 
   private _reactor: Calvin;
+
+  /**
+   * @description Object giving special effects to DOM elements.
+   * @private
+   * @type {Tween}
+   * @memberof Alice
+   */
+
+  private _tween: Tween;
+
+  /**
+   * @description Object allowing DOM objects detection.
+   * @private
+   * @type {Detect}
+   * @memberof Alice
+   */
+
+  private _detect: Detect;
 
   /**
    * @description The scroll end delay in ms.
@@ -23,11 +43,36 @@ export class Alice {
    * @author Alphability <albanmezino@gmail.com>
    * @memberof Alice
    */
-  constructor() {
+  constructor(optionsPluginsList: string[] = []) {
     this._scrollEventHandler = this._scrollEventHandler.bind(this);
 
     // Store default window values before any scroll event
     this._reactor = new Calvin({ scrollTop: 0, isScrolling: false });
+
+    // Prepare plugins
+    this._tween = new Tween();
+    this._detect = new Detect(this._reactor, this._tween);
+
+    this._initializePlugins(optionsPluginsList);
+  }
+
+  private _initializePlugins(pluginsList: string[]): void {
+    if (!pluginsList.length) {
+      return;
+    }
+
+    // Init tweening only if plugins are active
+    // this._tween.initialize();
+
+    pluginsList.forEach((pluginName) => {
+      if (pluginName === 'detect') {
+        this._detect.initialize();
+      } else if (pluginName === 'speed') {
+        // this._speed.initialize();
+      } else if (pluginName === 'collant') {
+        // this._collant.initialize();
+      }
+    });
   }
 
   /**
@@ -110,4 +155,16 @@ export class Alice {
   get scroll(): Calvin {
     return this._reactor;
   }
+
+  get detect(): Detect | undefined {
+    return this._detect;
+  }
+
+  // get speed(): {
+  //   return
+  // }
+
+  // get collant(): {
+  //   return
+  // }
 }
