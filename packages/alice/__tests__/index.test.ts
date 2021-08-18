@@ -1,84 +1,57 @@
-import { Eva } from '../src/index';
+beforeEach(() => {
+  jest.resetModules();
+});
 
 describe('Success cases', () => {
-  test('It should return a viewport width different from 0', () => {
-    // Use modern in order to run lodash decounce function
-    jest.useFakeTimers('modern');
+  test('It should return a scrollTop value different from 0', () => {
+    // Change the scroll value to 1000px.
+    global.scrollY = 1000;
 
-    // Change the viewport width to 0px.
-    global.innerWidth = 0;
+    // eslint-disable-next-line
+    const { Alice } = require('../src/index');
+    const alice = new Alice();
+    alice.initialize();
 
-    const eva = new Eva();
-    eva.initialize();
+    // Trigger the window scroll event.
+    global.dispatchEvent(new Event('scroll'));
+    global.dispatchEvent(new Event('scroll'));
 
-    // Change the viewport width to 1000px.
-    global.innerWidth = 1000;
-    // Trigger the window resize event.
-    global.dispatchEvent(new Event('resize'));
+    expect(alice.scroll.data.scrollTop).toStrictEqual(1000);
 
-    // Run debounce function after resize
-    jest.runAllTimers();
-
-    expect(eva.viewport.data.width).toStrictEqual(1000);
+    alice.destroy();
   });
 
-  test('It should return a viewport height different from 0', () => {
-    // Use modern in order to run lodash decounce function
-    jest.useFakeTimers('modern');
+  test('It should not take the first scroll event into consideration', () => {
+    // Change the scroll value to 1000px.
+    global.scrollY = 1000;
 
-    // Change the viewport height to 0px.
-    global.innerHeight = 0;
+    // eslint-disable-next-line
+    const { Alice } = require('../src/index');
+    const alice = new Alice();
+    alice.initialize();
 
-    const eva = new Eva();
-    eva.initialize();
+    // Triggering the window's first scroll event only.
+    global.dispatchEvent(new Event('scroll'));
 
-    // Change the viewport height to 1000px.
-    global.innerHeight = 1000;
-    // Trigger the window resize event.
-    global.dispatchEvent(new Event('resize'));
+    expect(alice.scroll.data.scrollTop).toStrictEqual(0);
 
-    // Run debounce function after resize
-    jest.runAllTimers();
-
-    expect(eva.viewport.data.height).toStrictEqual(1000);
+    alice.destroy();
   });
 
-  test('It should dampen the resize class addition during consecutive resize events', () => {
-    // Use modern in order to run lodash decounce function
-    jest.useFakeTimers('modern');
+  test('It should not take the scroll event into consideration', () => {
+    // Change the scroll value to 1000px.
+    global.scrollY = 1000;
 
-    // Change the viewport width to 0px.
-    global.innerWidth = 0;
+    // eslint-disable-next-line
+    const { Alice } = require('../src/index');
+    const alice = new Alice();
+    alice.initialize();
+    alice.destroy();
 
-    const eva = new Eva();
-    eva.initialize();
+    // Trigger the window scroll event.
+    global.dispatchEvent(new Event('scroll'));
+    global.dispatchEvent(new Event('scroll'));
 
-    // Change the viewport width to 1000px.
-    global.innerWidth = 1000;
-    // Trigger the window resize event.
-    global.dispatchEvent(new Event('resize'));
-    // Trigger the window resize event again.
-    global.dispatchEvent(new Event('resize'));
-
-    // Run debounce function after resize
-    jest.runAllTimers();
-
-    expect(eva.viewport.data.width).toStrictEqual(1000);
-  });
-
-  test('It should not take the resize event into consideration', () => {
-    // Change the viewport width to 0px.
-    global.innerWidth = 0;
-
-    const eva = new Eva();
-    eva.initialize();
-    eva.destroy();
-
-    // Change the viewport width to 1000px.
-    global.innerWidth = 1000;
-    // Trigger the window resize event.
-    global.dispatchEvent(new Event('resize'));
-
-    expect(eva.viewport.data.width).toStrictEqual(0);
+    expect(alice.scroll.data.scrollTop).toStrictEqual(0);
   });
 });
