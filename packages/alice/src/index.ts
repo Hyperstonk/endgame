@@ -1,42 +1,55 @@
 import debounce from 'lodash/debounce';
 import { Calvin } from '@endgame/calvin';
-import { Tween } from './tween';
+import { Eva } from '@endgame/eva';
+
 import { Detect } from './detect';
+import { Speed } from './speed';
 
 export class Alice {
   /**
-   * @description Object allowing the use of reactive data.
-   * @private
+   * @description The scroll end delay in ms.
+   * @static
+   * @memberof Alice
+   */
+  static _scrollEndDelay = 100;
+
+  /**
+   * @description Object allowing the use of reactive data. Storing default scroll values before any scroll event.
+   * @static
    * @type {Calvin}
    * @memberof Alice
    */
 
-  private _reactor: Calvin;
+  static _reactor: Calvin = new Calvin({ scrollTop: 0, isScrolling: false });
 
   /**
-   * @description Object giving special effects to DOM elements.
-   * @private
-   * @type {Tween}
+   * @description Object allowing to watch view data.
+   * @static
+   * @type {Eva}
    * @memberof Alice
    */
 
-  private _tween: Tween;
+  static _eva: Eva = new Eva();
 
   /**
    * @description Object allowing DOM objects detection.
-   * @private
+   * @static
    * @type {Detect}
    * @memberof Alice
    */
 
-  private _detect: Detect;
+  static _detect: Detect = new Detect();
 
   /**
-   * @description The scroll end delay in ms.
-   * @private
+   * @description Object allowing DOM objects detection.
+   * @static
+   * @type {Speed}
    * @memberof Alice
    */
-  private _scrollEndDelay = 100;
+
+  static _speed: Speed = new Speed();
+
+  private _refreshScroll = false;
 
   /**
    * Creates an instance of Alice.
@@ -46,13 +59,10 @@ export class Alice {
   constructor(optionsPluginsList: string[] = []) {
     this._scrollEventHandler = this._scrollEventHandler.bind(this);
 
-    // Store default window values before any scroll event
-    this._reactor = new Calvin({ scrollTop: 0, isScrolling: false });
+    // Init viewport values
+    Alice._eva.initialize();
 
     // Prepare plugins
-    this._tween = new Tween();
-    this._detect = new Detect(this._reactor, this._tween);
-
     this._initializePlugins(optionsPluginsList);
   }
 
@@ -61,14 +71,19 @@ export class Alice {
       return;
     }
 
-    // Init tweening only if plugins are active
-    // this._tween.initialize();
-
     pluginsList.forEach((pluginName) => {
+      // NOTE: Mapping dependecies before initialization. It ensures that plugins share the same instances of Alice dependencies.
+
       if (pluginName === 'detect') {
-        this._detect.initialize();
+        Detect._reactor = Alice._reactor;
+        Detect._eva = Alice._eva;
+
+        Alice._detect.initialize();
       } else if (pluginName === 'speed') {
-        // this._speed.initialize();
+        Speed._reactor = Alice._reactor;
+        Speed._eva = Alice._eva;
+
+        Alice._speed.initialize();
       } else if (pluginName === 'collant') {
         // this._collant.initialize();
       }
@@ -82,7 +97,7 @@ export class Alice {
    * @memberof Alice
    */
   private _collectEventValues(): void {
-    this._reactor.data.scrollTop = window.scrollY || window.pageYOffset;
+    Alice._reactor.data.scrollTop = window.scrollY || window.pageYOffset;
   }
 
   /**
@@ -92,14 +107,21 @@ export class Alice {
    * @memberof Alice
    */
   private _scrollEventHandler(): void {
-    this._reactor.data.isScrolling = true;
+    // Prevent automatic browser scroll on refresh
+    if (!this._refreshScroll) {
+      this._refreshScroll = true;
+      return;
+    }
+
+    Alice._reactor.data.isScrolling = true;
     this._collectEventValues();
+
     this._scrollEnd();
   }
 
   private _scrollEnd = debounce(() => {
-    this._reactor.data.isScrolling = false;
-  }, this._scrollEndDelay);
+    Alice._reactor.data.isScrolling = false;
+  }, Alice._scrollEndDelay);
 
   /**
    * @description Hooks onto the scroll event.
@@ -130,11 +152,11 @@ export class Alice {
    * @memberof Alice
    */
   public initialize(): void {
+    // Avoid having multiple listeners at the same time.
+    this._detachListeners();
+
     // Register the scroll event
     this._attachListeners();
-
-    // Update the reactor viewport data w/ scroll values
-    this._collectEventValues();
   }
 
   /**
@@ -153,16 +175,20 @@ export class Alice {
    * @memberof Alice
    */
   get scroll(): Calvin {
-    return this._reactor;
+    return Alice._reactor;
   }
 
-  get detect(): Detect | undefined {
-    return this._detect;
+  get view(): Calvin {
+    return Alice._eva.view;
   }
 
-  // get speed(): {
-  //   return
-  // }
+  get detect(): Detect {
+    return Alice._detect;
+  }
+
+  get speed(): Speed {
+    return Alice._speed;
+  }
 
   // get collant(): {
   //   return

@@ -1,45 +1,37 @@
-type AnyFunction = (...args: any[]) => typeof args;
+import raf from 'raf';
+import fastdomCore from 'fastdom';
+import fastdomPromised from 'fastdom/extensions/fastdom-promised';
+import { Calvin } from '@endgame/calvin';
 
-export interface TweenOptions {
-  addClass: boolean;
-  once: number;
-  triggerOffset: number;
-  lerpAmount: number;
-  speedAmount: number;
-  collantOffset: {
-    offset: number;
-    offsetViewport: string;
-  };
-  position: string;
-}
+import { AnyFunction } from './contracts';
+import {
+  TweenOptions,
+  TweenList,
+  TweenState,
+  InputTweenOptions,
+} from './contracts/Tween';
 
-export interface TweenObject {
-  element: HTMLElement;
-  itemIndex: number;
-  options: any;
-  state: any;
-}
+// fastdom extension
+const fastdom = fastdomCore.extend(fastdomPromised);
 
-type TweenList = Record<string, TweenObject>;
+const makeEventId = (id: string, eventName: string) => `${id}-${eventName}`;
 
-const _makeEventId = (id: string, eventName: string) => `${id}-${eventName}`;
-
-const _removeStringFromArray = (str: string, array: string[]) =>
+const removeStringFromArray = (str: string, array: string[]) =>
   array.splice(array.indexOf(str), 1);
 
-const _arrayEquals = (a: any[], b: any[]) =>
+const arrayEquals = (a: any[], b: any[]) =>
   a.length === b.length && a.every((val, index) => val === b[index]);
 
-export class Tween {
-  private _namespace = 'tween';
-  private _idTicket = 0;
-  private _list: TweenList = {};
-  private _events = ['enter-view', 'leave-view'];
-  private _notifications: Record<string, AnyFunction[]> = {};
+export abstract class Tween {
+  static _namespace = 'tween';
+  static _idTicket = 0;
+  static _list: TweenList = {};
+  static _events = ['enter-view', 'leave-view'];
+  static _notifications: Record<string, AnyFunction[]> = {};
 
-  private _defaultOptions: TweenOptions = {
+  static _defaultOptions: TweenOptions = {
     addClass: true,
-    once: 0,
+    once: false,
     triggerOffset: 0,
     lerpAmount: 0,
     speedAmount: 0,
@@ -50,7 +42,7 @@ export class Tween {
     position: 'top',
   };
 
-  private _defaultState = {
+  static _defaultState: TweenState = {
     itemId: null,
     classes: [],
     boundings: null,
@@ -68,13 +60,14 @@ export class Tween {
     collantEvent: '',
   };
 
-  constructor() {
-    // Don't do anything here.
-    // All plugins are instanciated even if not used.
-  }
+  static _reactor: Calvin;
+
+  private _resizingMainHandler = false;
+
+  constructor() {}
 
   private _emit(propertyName: string, propertyValue: any) {
-    const propertyWatchers = this._notifications[propertyName];
+    const propertyWatchers = Tween._notifications[propertyName];
     if (!propertyWatchers) {
       return;
     }
@@ -88,20 +81,29 @@ export class Tween {
   private _on(notificationsObject: Record<string, AnyFunction>) {
     Object.entries(notificationsObject).forEach(
       ([propertyName, notification]) => {
-        if (!this._notifications[propertyName])
-          this._notifications[propertyName] = [];
-        this._notifications[propertyName].push(notification);
+        if (!Tween._notifications[propertyName])
+          Tween._notifications[propertyName] = [];
+        Tween._notifications[propertyName].push(notification);
       }
     );
   }
 
+  private _subscribeItemToEvent(
+    eventName: string,
+    id: string,
+    func: AnyFunction
+  ) {
+    const eventId = makeEventId(id, eventName);
+    this._on({ [eventId]: func });
+  }
+
   private _flush(propertyName: string) {
-    delete this._notifications[propertyName];
+    delete Tween._notifications[propertyName];
   }
 
   private _getProxyState(element: HTMLElement, itemIndex: number) {
     // ⚠️ The state needs to be declared here in order to give a fresh object to each proxy
-    const state = JSON.parse(JSON.stringify(this._defaultState));
+    const state = JSON.parse(JSON.stringify(Tween._defaultState));
 
     return new Proxy(state, {
       set: (target, prop, propValue, receiver) => {
@@ -109,7 +111,7 @@ export class Tween {
         // isInView
         if (prop === 'isInView' && target.isInView !== propValue) {
           const eventName = propValue ? 'enter-view' : 'leave-view';
-          const eventId = _makeEventId(target.itemId, eventName);
+          const eventId = makeEventId(target.itemId, eventName);
           this._emit(eventId, {
             itemIndex,
           });
@@ -117,23 +119,23 @@ export class Tween {
           if (propValue) {
             target.classes.push('--in-view');
           } else {
-            _removeStringFromArray('--in-view', target.classes);
+            removeStringFromArray('--in-view', target.classes);
           }
         }
 
         // collantEvent
         if (prop === 'collantEvent' && target.collantEvent !== propValue) {
-          const eventId = _makeEventId(target.itemId, propValue);
+          const eventId = makeEventId(target.itemId, propValue);
           this._emit(eventId, {
             itemIndex,
           });
 
-          _removeStringFromArray(`--${target.collantEvent}`, target.classes);
+          removeStringFromArray(`--${target.collantEvent}`, target.classes);
           target.classes.push(`--${propValue}`);
         }
 
         // classes updates
-        if (!_arrayEquals(oldClasses, target.classes)) {
+        if (!arrayEquals(oldClasses, target.classes)) {
           const classesToRemove = oldClasses.filter(
             (x: string) => !target.classes.includes(x)
           );
@@ -157,44 +159,87 @@ export class Tween {
 
   private _addItem(
     element: HTMLElement,
-    options: TweenOptions,
+    options: InputTweenOptions,
     itemIndex = 0
   ): string {
     // Keep updating _idTicket in order to always attach a unique id to your new Catalyst items
-    this._idTicket += 1;
-    const itemId = `${this._namespace}-${this._idTicket}`;
+    Tween._idTicket += 1;
+    const itemId = `${Tween._namespace}-${Tween._idTicket}`;
 
     /**
      * itemIndex will be updated if the DOMElement came from an array
      */
-    this._list[itemId] = {
+    Tween._list[itemId] = {
       element,
       itemIndex,
       options: {
-        ...this._defaultOptions,
-        ...options,
+        ...Tween._defaultOptions,
+        ...(<TweenOptions>options),
       },
       state: this._getProxyState(element, itemIndex),
     };
-    this._list[itemId].state.itemId = itemId;
+    Tween._list[itemId].state.itemId = itemId;
 
     return itemId;
   }
 
-  private _subscribeItemToEvent(
-    eventName: string,
-    id: string,
-    func: AnyFunction
-  ) {
-    const eventId = _makeEventId(id, eventName);
-    this._on({ [eventId]: func });
-  }
-
   private _removeItem(id: string) {
-    this._events.forEach((eventName) => {
+    Tween._events.forEach((eventName) => {
       this._flush(`${id}-${eventName}`);
     });
-    delete this._list[id];
+    delete Tween._list[id];
+  }
+
+  protected _handleResize(): void {
+    if (this._resizingMainHandler || !Tween._reactor) {
+      return;
+    }
+
+    this._resizingMainHandler = true;
+    const classes: string[][] = [];
+
+    // Read DOM
+    Object.values(Tween._list).forEach((item, index) => {
+      /**
+       * Resetting each prop.
+       * ⚠️ In order to reset a Proxy prop
+       * you need to go to the furthest nested level.
+       */
+      classes[index] = [...item.state.classes];
+      item.state.classes = Tween._defaultState.classes;
+      item.state.boundings = Tween._defaultState.boundings;
+      item.state.targetBoundings = Tween._defaultState.targetBoundings;
+      item.state.coordinates.x = Tween._defaultState.coordinates.x;
+      item.state.coordinates.y = Tween._defaultState.coordinates.y;
+      item.state.lerpDone = Tween._defaultState.lerpDone;
+      item.state.collant.parsedOffset =
+        Tween._defaultState.collant.parsedOffset;
+      item.state.collant.scrollOffset =
+        Tween._defaultState.collant.scrollOffset;
+      item.state.isInView = Tween._defaultState.isInView;
+      item.state.collantEvent = Tween._defaultState.collantEvent;
+    });
+
+    // Write DOM
+    Object.values(Tween._list).forEach((item, index) => {
+      classes[index].forEach((className) => {
+        fastdom.mutate(() => {
+          item.element.classList.remove(className);
+        });
+      });
+    });
+
+    raf(() => {
+      /**
+       * ⚠️ Force update elements' scroll calculation
+       * on the frame following the DOM resets.
+       */
+      if (Tween._reactor.data.scrollTop) {
+        Tween._reactor.data.scrollTop -= 1;
+      }
+
+      this._resizingMainHandler = false;
+    });
   }
 
   public add(
@@ -206,14 +251,14 @@ export class Tween {
         this._addItem(element, options, itemIndex)
       );
     } else {
-      // Here elements is considered as a single DOMElement
+      // Here "elements" is considered as a single DOMElement
       return this._addItem(elements, options);
     }
   }
 
   public on(eventName: string, ids: string[], func: AnyFunction): Tween {
     // Events name check (ensuring that every functions will have a reference in order to use removeEventListener).
-    if (!this._events.includes(eventName))
+    if (!Tween._events.includes(eventName))
       throw new Error(
         `The event "${eventName}" passed to <AlicePlugin>.on() is not handled by the element.`
       );
@@ -239,9 +284,5 @@ export class Tween {
       this._removeItem(ids);
     }
     return this;
-  }
-
-  public getList(): TweenList | null {
-    return Object.keys(this._list) ? this._list : null;
   }
 }

@@ -1,58 +1,51 @@
-import { Calvin } from '@endgame/calvin';
-import { Tween, TweenObject, TweenOptions } from './tween';
+import { Eva } from '@endgame/eva';
 
-export class Detect {
-  /**
-   * @description Object allowing the use of reactive data.
-   * @private
-   * @type {Calvin}
-   * @memberof Alice
-   */
+import {
+  InputTweenOptions,
+  TweenObject,
+  TweenOptions,
+} from './contracts/Tween';
+import { Tween } from './tween';
+import { isInView, getBoundings } from './utils/view';
 
-  private _reactor: Calvin;
+export class Detect extends Tween {
+  static isInitialized = false;
 
-  /**
-   * @description Watched scrollTop value.
-   * @private
-   * @memberof Detect
-   */
-  private _scrollTop = 0;
+  static _eva: Eva;
 
-  private _tween: Tween;
-
-  private _tweensList: TweenObject[];
+  private _detectTweensList: TweenObject[] = [];
 
   /**
    * Creates an instance of Detect.
    * @author Alphability <albanmezino@gmail.com>
    * @memberof Detect
    */
-  constructor(reactor: Calvin, tween: Tween) {
-    this._reactor = reactor;
-    this._tween = tween;
+  constructor() {
+    super();
   }
 
-  private async _computeBoundings({ element, state }: TweenObject): void {
+  private async _computeDetection(tween: TweenObject) {
     // NOTE: Early returns with if statements without curly brackets allow the browser to parse js. Thus, getBoudingClientRect was calling a style recalculation even if it as not used.
 
-    if (!state.boundings) {
+    if (!tween.state.boundings) {
       /**
        * We can't use spread operator
        * because the object returned by getBoundingClientRect
        * is a DOMRect, not a classic object.
        */
-      state.boundings = await _getBoundings(element, this._scrollTop);
+      tween.state.boundings = await getBoundings(
+        tween.element,
+        Detect._reactor.data.scrollTop
+      );
     }
-  }
 
-  private _computeInView(tween) {
     const { boundings, coordinates } = tween.state;
     const { triggerOffset } = tween.options;
-    const { windowHeight } = prototype._reactor.data;
+    const { height: windowHeight } = Detect._eva.view.data;
 
-    // Computing detection for each tween.
+    // Computing in view detection for each tween.
     tween.state.isInView = isInView(
-      this._scrollTop,
+      Detect._reactor.data.scrollTop,
       windowHeight,
       triggerOffset,
       boundings,
@@ -60,15 +53,11 @@ export class Detect {
     );
   }
 
-  private async _computeDetection(tween: TweenObject) {
-    await _computeBoundings(tween);
-    _computeInView(tween);
-  }
-
   private _handleTweenList() {
-    this._tweensList.forEach((tween) => {
-      (!tween.options.once || !tween.state.isInView) &&
+    this._detectTweensList.forEach((tween) => {
+      if (!tween.options.once || !tween.state.isInView) {
         this._computeDetection(tween);
+      }
     });
   }
 
@@ -78,10 +67,32 @@ export class Detect {
    * @memberof Detect
    */
   public initialize(): void {
-    this._reactor.watch({
-      scrollTop: (val) => {
-        this._scrollTop = val;
+    // No multiple init
+    if (Detect.isInitialized) {
+      return;
+    }
+
+    Detect.isInitialized = true;
+
+    Detect._reactor.watch({
+      scrollTop: () => {
         this._handleTweenList();
+      },
+    });
+    Detect._eva.view.watch({
+      width: (val) => {
+        if (!val) {
+          return;
+        }
+
+        this._handleResize();
+      },
+      height: (val) => {
+        if (!val) {
+          return;
+        }
+
+        this._handleResize();
       },
     });
   }
@@ -92,28 +103,30 @@ export class Detect {
    * @memberof Detect
    */
   public destroy(): void {
-    // const ids = Object.keys(prototype._list);
-    // prototype._remove(ids);
+    const ids = Object.keys(Detect._list);
+    this.remove(ids);
+    Detect.isInitialized = false;
   }
 
   public add(
-    elements: HTMLElement | HTMLElement[],
-    options: TweenOptions
+    elements: any | any[],
+    options: InputTweenOptions
   ): string | string[] {
-    const ids = this._tween.add(elements, options);
+    const ids = super.add(
+      <HTMLElement | HTMLElement[]>elements,
+      <TweenOptions>options
+    );
 
     // Update tweens list after registering a new element
-
-    const list = this._tween.getList();
-    if (list) {
-      this._tweensList = Object.values(list);
+    if (Object.keys(Detect._list)) {
+      this._detectTweensList = Object.values(Detect._list);
     }
 
     return ids;
   }
 
   public remove(ids: string[]): Tween {
-    this._tweensList = [];
-    return this._tween.remove(ids);
+    this._detectTweensList = [];
+    return super.remove(ids);
   }
 }

@@ -99,10 +99,7 @@ function topologicalSort(edges: [string, string][]) {
 
       visit(
         afterID.toString(),
-        ancestors
-        // ancestors.map(function (v) {
-        //   return v;
-        // })
+        ancestors.map((v) => v)
       );
     });
 
