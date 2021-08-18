@@ -49,6 +49,10 @@ export class Alice {
 
   static _speed: Speed = new Speed();
 
+  private _isInitialized = false;
+
+  private _optionsPluginsList: string[] = [];
+
   private _refreshScroll = false;
 
   /**
@@ -59,11 +63,7 @@ export class Alice {
   constructor(optionsPluginsList: string[] = []) {
     this._scrollEventHandler = this._scrollEventHandler.bind(this);
 
-    // Init viewport values
-    Alice._eva.initialize();
-
-    // Prepare plugins
-    this._initializePlugins(optionsPluginsList);
+    this._optionsPluginsList = optionsPluginsList;
   }
 
   private _initializePlugins(pluginsList: string[]): void {
@@ -152,11 +152,22 @@ export class Alice {
    * @memberof Alice
    */
   public initialize(): void {
+    // No multiple init
     // Avoid having multiple listeners at the same time.
-    this._detachListeners();
+    if (this._isInitialized) {
+      return;
+    }
+
+    this._isInitialized = true;
+
+    // Init viewport values
+    Alice._eva.initialize();
 
     // Register the scroll event
     this._attachListeners();
+
+    // Prepare plugins
+    this._initializePlugins(this._optionsPluginsList);
   }
 
   /**
@@ -166,6 +177,8 @@ export class Alice {
    */
   public destroy(): void {
     this._detachListeners();
+
+    this._isInitialized = false;
   }
 
   /**
