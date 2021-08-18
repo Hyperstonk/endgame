@@ -14,7 +14,7 @@
       "ignoreChanges": [
         "**/*.md",
         "*.md",
-        "**/*.test.ts",
+        "**/__tests__/**",
         ".editorconfig",
         ".eslintrc.js",
         ".gitignore",

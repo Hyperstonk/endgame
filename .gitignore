@@ -103,6 +103,7 @@ coverage
 # Yarn Integrity file
 .yarn-integrity
 
+### Endgame ###
 
 # Ensure built files are included
 # !/packages/*/dist/

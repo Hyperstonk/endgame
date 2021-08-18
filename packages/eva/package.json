@@ -2,8 +2,8 @@
   "name": "@endgame/eva",
   "version": "1.0.6-alpha.5",
   "description": "Ease Viewport Access",
-  "repository": "Alphability/endgame",
-  "author": "Alphability <albanmezino@gmail.com> (https://albanmezino.com)",
+  "repository": "MBDW-Studio/endgame",
+  "author": "Mental Breakdown <hello@mentalbreakdown.studio> (https://mentalbreakdown.studio)",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -14,13 +14,9 @@
   "scripts": {
     "watch": "tsc -w",
     "test": "jest __tests__ --collectCoverage --runInBand",
-    "test:watch": "jest __tests__ --watchAll --runInBand",
-    "prepare": "yarn snyk-protect",
-    "snyk-protect": "snyk protect"
+    "test:watch": "jest __tests__ --watchAll --runInBand"
   },
-  "devDependencies": {
-    "snyk": "^1.508.0"
-  },
+  "devDependencies": {},
   "dependencies": {
     "@endgame/calvin": "^1.0.6-alpha.5",
     "lodash": "^4.17.21"
@@ -28,6 +24,5 @@
   "publishConfig": {
     "access": "public"
   },
-  "license": "MIT",
-  "snyk": true
+  "license": "MIT"
 }
