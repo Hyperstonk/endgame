@@ -19,7 +19,7 @@ describe('Success cases', () => {
     // Run debounce function after resize
     jest.runAllTimers();
 
-    expect(eva.viewport.data.width).toStrictEqual(1000);
+    expect(eva.view.data.width).toStrictEqual(1000);
   });
 
   test('It should return a viewport height different from 0', () => {
@@ -40,7 +40,7 @@ describe('Success cases', () => {
     // Run debounce function after resize
     jest.runAllTimers();
 
-    expect(eva.viewport.data.height).toStrictEqual(1000);
+    expect(eva.view.data.height).toStrictEqual(1000);
   });
 
   test('It should dampen the resize class addition during consecutive resize events', () => {
@@ -63,7 +63,7 @@ describe('Success cases', () => {
     // Run debounce function after resize
     jest.runAllTimers();
 
-    expect(eva.viewport.data.width).toStrictEqual(1000);
+    expect(eva.view.data.width).toStrictEqual(1000);
   });
 
   test('It should not take the resize event into consideration', () => {
@@ -79,6 +79,6 @@ describe('Success cases', () => {
     // Trigger the window resize event.
     global.dispatchEvent(new Event('resize'));
 
-    expect(eva.viewport.data.width).toStrictEqual(0);
+    expect(eva.view.data.width).toStrictEqual(0);
   });
 });

@@ -139,7 +139,7 @@ export class Eva {
    * @type {Calvin}
    * @memberof Eva
    */
-  get viewport(): Calvin {
+  get view(): Calvin {
     return this._reactor;
   }
 }
