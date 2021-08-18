@@ -1,6 +1,6 @@
 {
   "name": "@endgame/eva",
-  "version": "1.0.6-alpha.5",
+  "version": "1.0.6-alpha.6",
   "description": "Ease Viewport Access",
   "repository": "MBDW-Studio/endgame",
   "author": "Mental Breakdown <hello@mentalbreakdown.studio> (https://mentalbreakdown.studio)",
@@ -16,9 +16,8 @@
     "test": "jest __tests__ --collectCoverage --runInBand",
     "test:watch": "jest __tests__ --watchAll --runInBand"
   },
-  "devDependencies": {},
   "dependencies": {
-    "@endgame/calvin": "^1.0.6-alpha.5",
+    "@endgame/calvin": "^1.0.6-alpha.6",
     "lodash": "^4.17.21"
   },
   "publishConfig": {
