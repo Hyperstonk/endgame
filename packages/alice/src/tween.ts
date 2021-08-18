@@ -64,8 +64,6 @@ export abstract class Tween {
 
   private _resizingMainHandler = false;
 
-  constructor() {}
-
   private _emit(propertyName: string, propertyValue: any) {
     const propertyWatchers = Tween._notifications[propertyName];
     if (!propertyWatchers) {
