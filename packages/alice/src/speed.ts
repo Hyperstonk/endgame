@@ -20,16 +20,54 @@ import {
 const fastdom = fastdomCore.extend(fastdomPromised);
 
 export class Speed extends Tween {
+  /**
+   * @description Boolean ensuring that we can't initialize multiple speed plugins.
+   * @static
+   * @memberof Speed
+   */
+
   static isInitialized = false;
 
-  // 60FPS = 60 frames per second = 16 ms per frame
+  /**
+   * @description Value used to ensure that we compute tweens only 60 times per second.
+   * 60FPS = 60 frames per second = 16 ms per frame.
+   * @static
+   * @memberof Speed
+   */
+
   static _sixtyFpsToMs = 16;
+
+  /**
+   * @description Object allowing to watch view data.
+   * @static
+   * @type {Eva}
+   * @memberof Speed
+   */
 
   static _eva: Eva;
 
+  /**
+   * @description List of speed tween objects.
+   * @private
+   * @type {TweenObject[]}
+   * @memberof Speed
+   */
+
   private _speedTweensList: TweenObject[] = [];
 
+  /**
+   * @description Ensuring that we won't process multiple speed computations at the same time.
+   * @private
+   * @memberof Speed
+   */
+
   private _ticking = false;
+
+  /**
+   * @description Ensuring that we'll complete lerp transformations even if the user is not scrolling anymore.
+   * @private
+   * @memberof Speed
+   */
 
   private _lerpDone = true;
 
@@ -38,11 +76,21 @@ export class Speed extends Tween {
    * @author Alphability <albanmezino@gmail.com>
    * @memberof Speed
    */
+
   constructor() {
     super();
   }
 
-  private async _computeDetection(tween: TweenObject) {
+  /**
+   * @description Computing tween in view position.
+   * @author Alphability <albanmezino@gmail.com>
+   * @private
+   * @param {TweenObject} tween
+   * @returns {Promise<void>}
+   * @memberof Speed
+   */
+
+  private async _computeDetection(tween: TweenObject): Promise<void> {
     // NOTE: Early returns with if statements without curly brackets allow the browser to parse js. Thus, getBoudingClientRect was calling a style recalculation even if it as not used.
 
     if (!tween.state.boundings) {
@@ -70,6 +118,15 @@ export class Speed extends Tween {
       coordinates
     );
   }
+
+  /**
+   * @description Computing element speed position.
+   * @author Alphability <albanmezino@gmail.com>
+   * @private
+   * @param {TweenObject} tween
+   * @returns {void}
+   * @memberof Speed
+   */
 
   private _computeSpeed(tween: TweenObject): void {
     if (!tween.state.isInView) {
@@ -101,7 +158,15 @@ export class Speed extends Tween {
       !lerpAmount || Math.abs(transformValue - tween.state.coordinates.y) <= 1;
   }
 
-  private async _applySpeed(tween: TweenObject) {
+  /**
+   * @description Applying the computed speed position to the element.
+   * @author Alphability <albanmezino@gmail.com>
+   * @private
+   * @param {TweenObject} tween
+   * @returns {Promise<void>}
+   * @memberof Speed
+   */
+  private async _applySpeed(tween: TweenObject): Promise<void> {
     const {
       element,
       state: { isInView, coordinates },
@@ -115,6 +180,13 @@ export class Speed extends Tween {
       applyTransform(element, coordinates);
     });
   }
+
+  /**
+   * @description Loop through tweens to compute them.
+   * @author Alphability <albanmezino@gmail.com>
+   * @private
+   * @memberof Speed
+   */
 
   private _handleTweenList = throttle(async () => {
     if (this._ticking) {
@@ -162,10 +234,11 @@ export class Speed extends Tween {
   }
 
   /**
-   * @description Initializing the viewport reactive data abilities when the window object is defined.
+   * @description Initializing the speed abilities when the window object is defined.
    * @author Alphability <albanmezino@gmail.com>
    * @memberof Speed
    */
+
   public initialize(): void {
     // No multiple init
     if (Speed.isInitialized) {
@@ -200,15 +273,25 @@ export class Speed extends Tween {
   }
 
   /**
-   * @description Destroying the reactive data object and listeners.
+   * @description Destroying the tweens.
    * @author Alphability <albanmezino@gmail.com>
    * @memberof Speed
    */
+
   public destroy(): void {
     const ids = Object.keys(Speed._list);
     this.remove(ids);
     Speed.isInitialized = false;
   }
+
+  /**
+   * @description Adding new tweens to the detection list.
+   * @author Alphability <albanmezino@gmail.com>
+   * @param {(any | any[])} elements
+   * @param {InputTweenOptions} { speed = 0, lerp = 0, ...otherOptions }
+   * @returns {(string | string[])}
+   * @memberof Speed
+   */
 
   public add(
     elements: any | any[],
@@ -229,6 +312,14 @@ export class Speed extends Tween {
 
     return ids;
   }
+
+  /**
+   * @description Removing tweens by id.
+   * @author Alphability <albanmezino@gmail.com>
+   * @param {string[]} ids
+   * @returns {Tween}
+   * @memberof Speed
+   */
 
   public remove(ids: string[]): Tween {
     this._speedTweensList = [];

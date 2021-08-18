@@ -9,9 +9,29 @@ import { Tween } from './tween';
 import { isInView, getBoundings } from './utils/view';
 
 export class Detect extends Tween {
+  /**
+   * @description Boolean ensuring that we can't initialize multiple detection plugins.
+   * @static
+   * @memberof Detect
+   */
+
   static isInitialized = false;
 
+  /**
+   * @description Object allowing to watch view data.
+   * @static
+   * @type {Eva}
+   * @memberof Detect
+   */
+
   static _eva: Eva;
+
+  /**
+   * @description List of detect tween objects.
+   * @private
+   * @type {TweenObject[]}
+   * @memberof Detect
+   */
 
   private _detectTweensList: TweenObject[] = [];
 
@@ -20,9 +40,18 @@ export class Detect extends Tween {
    * @author Alphability <albanmezino@gmail.com>
    * @memberof Detect
    */
+
   constructor() {
     super();
   }
+
+  /**
+   * @description Computing tween in view position.
+   * @author Alphability <albanmezino@gmail.com>
+   * @private
+   * @param {TweenObject} tween
+   * @memberof Detect
+   */
 
   private async _computeDetection(tween: TweenObject) {
     // NOTE: Early returns with if statements without curly brackets allow the browser to parse js. Thus, getBoudingClientRect was calling a style recalculation even if it as not used.
@@ -53,6 +82,13 @@ export class Detect extends Tween {
     );
   }
 
+  /**
+   * @description Loop through tweens to compute them.
+   * @author Alphability <albanmezino@gmail.com>
+   * @private
+   * @memberof Detect
+   */
+
   private _handleTweenList() {
     this._detectTweensList.forEach((tween) => {
       if (!tween.options.once || !tween.state.isInView) {
@@ -62,10 +98,11 @@ export class Detect extends Tween {
   }
 
   /**
-   * @description Initializing the viewport reactive data abilities when the window object is defined.
+   * @description Initializing the detection abilities when the window object is defined.
    * @author Alphability <albanmezino@gmail.com>
    * @memberof Detect
    */
+
   public initialize(): void {
     // No multiple init
     if (Detect.isInitialized) {
@@ -98,15 +135,25 @@ export class Detect extends Tween {
   }
 
   /**
-   * @description Destroying the reactive data object and listeners.
+   * @description Destroying the tweens.
    * @author Alphability <albanmezino@gmail.com>
    * @memberof Detect
    */
+
   public destroy(): void {
     const ids = Object.keys(Detect._list);
     this.remove(ids);
     Detect.isInitialized = false;
   }
+
+  /**
+   * @description Adding new tweens to the detection list.
+   * @author Alphability <albanmezino@gmail.com>
+   * @param {(any | any[])} elements
+   * @param {InputTweenOptions} options
+   * @returns {(string | string[])}
+   * @memberof Detect
+   */
 
   public add(
     elements: any | any[],
@@ -124,6 +171,14 @@ export class Detect extends Tween {
 
     return ids;
   }
+
+  /**
+   * @description Removing tweens by id.
+   * @author Alphability <albanmezino@gmail.com>
+   * @param {string[]} ids
+   * @returns {Tween}
+   * @memberof Detect
+   */
 
   public remove(ids: string[]): Tween {
     this._detectTweensList = [];

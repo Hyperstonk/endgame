@@ -1,7 +1,17 @@
 import { Alice } from '../src/index';
 
+const alice = new Alice();
+
 beforeEach(() => {
-  jest.resetModules();
+  // Init before each test
+  alice.initialize();
+});
+
+afterEach(() => {
+  // Resetting Alice instance values before next test.
+  global.scrollY = 0;
+  global.dispatchEvent(new Event('scroll'));
+  alice.destroy();
 });
 
 describe('Success cases', () => {
@@ -9,45 +19,33 @@ describe('Success cases', () => {
     // Change the scroll value to 1000px.
     global.scrollY = 1000;
 
-    const alice = new Alice();
-    alice.initialize();
-
     // Trigger the window scroll event.
     global.dispatchEvent(new Event('scroll'));
     global.dispatchEvent(new Event('scroll'));
 
     expect(alice.scroll.data.scrollTop).toStrictEqual(1000);
-
-    alice.destroy();
   });
 
-  // test('It should not take the first scroll event into consideration', async () => {
-  //   // Change the scroll value to 1000px.
-  //   global.scrollY = 1000;
+  test('It should not take the first scroll event into consideration', async () => {
+    // Change the scroll value to 1000px.
+    global.scrollY = 1000;
 
-  //   const alice = new Alice2();
-  //   alice.initialize();
+    // Triggering the window's first scroll event only.
+    global.dispatchEvent(new Event('scroll'));
 
-  //   // Triggering the window's first scroll event only.
-  //   global.dispatchEvent(new Event('scroll'));
+    expect(alice.scroll.data.scrollTop).toStrictEqual(0);
+  });
 
-  //   expect(alice.scroll.data.scrollTop).toStrictEqual(0);
+  test('It should not take the scroll event into consideration', async () => {
+    // Change the scroll value to 1000px.
+    global.scrollY = 1000;
 
-  //   alice.destroy();
-  // });
+    alice.destroy();
 
-  // test('It should not take the scroll event into consideration', async () => {
-  //   // Change the scroll value to 1000px.
-  //   global.scrollY = 1000;
+    // Trigger the window scroll event.
+    global.dispatchEvent(new Event('scroll'));
+    global.dispatchEvent(new Event('scroll'));
 
-  //   const alice = new Alice3();
-  //   alice.initialize();
-  //   alice.destroy();
-
-  //   // Trigger the window scroll event.
-  //   global.dispatchEvent(new Event('scroll'));
-  //   global.dispatchEvent(new Event('scroll'));
-
-  //   expect(alice.scroll.data.scrollTop).toStrictEqual(0);
-  // });
+    expect(alice.scroll.data.scrollTop).toStrictEqual(0);
+  });
 });

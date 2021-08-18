@@ -23,11 +23,63 @@ const arrayEquals = (a: any[], b: any[]) =>
   a.length === b.length && a.every((val, index) => val === b[index]);
 
 export abstract class Tween {
+  /**
+   * @description Namespace used to generate tweens unique ids.
+   * @static
+   * @memberof Tween
+   */
+
   static _namespace = 'tween';
+
+  /**
+   * @description Incremental number used to generate tweens unique ids.
+   * @static
+   * @memberof Tween
+   */
+
   static _idTicket = 0;
+
+  /**
+   * @description Scroll reactive data.
+   * @static
+   * @type {Calvin}
+   * @memberof Tween
+   */
+
+  static _reactor: Calvin;
+
+  /**
+   * @description List of all the tweens ordered by id.
+   * @static
+   * @type {TweenList}
+   * @memberof Tween
+   */
+
   static _list: TweenList = {};
+
+  /**
+   * @description List of tween's possible events.
+   * @static
+   * @memberof Tween
+   */
+
   static _events = ['enter-view', 'leave-view'];
+
+  /**
+   * @description List of functions sorted by event name.
+   * @static
+   * @type {Record<string, AnyFunction[]>}
+   * @memberof Tween
+   */
+
   static _notifications: Record<string, AnyFunction[]> = {};
+
+  /**
+   * @description Default tween options.
+   * @static
+   * @type {TweenOptions}
+   * @memberof Tween
+   */
 
   static _defaultOptions: TweenOptions = {
     addClass: true,
@@ -41,6 +93,13 @@ export abstract class Tween {
     },
     position: 'top',
   };
+
+  /**
+   * @description Default tween state.
+   * @static
+   * @type {TweenState}
+   * @memberof Tween
+   */
 
   static _defaultState: TweenState = {
     itemId: null,
@@ -60,11 +119,25 @@ export abstract class Tween {
     collantEvent: '',
   };
 
-  static _reactor: Calvin;
+  /**
+   * @description Boolean used to debounce the tweens reset during window resize.
+   * @private
+   * @memberof Tween
+   */
 
   private _resizingMainHandler = false;
 
-  private _emit(propertyName: string, propertyValue: any) {
+  /**
+   * @description Emitting a notification.
+   * @author Alphability <albanmezino@gmail.com>
+   * @private
+   * @param {string} propertyName
+   * @param {*} propertyValue
+   * @returns {void}
+   * @memberof Tween
+   */
+
+  private _emit(propertyName: string, propertyValue: any): void {
     const propertyWatchers = Tween._notifications[propertyName];
     if (!propertyWatchers) {
       return;
@@ -76,6 +149,14 @@ export abstract class Tween {
     }
   }
 
+  /**
+   * @description Method used to attach new functions to events.
+   * @author Alphability <albanmezino@gmail.com>
+   * @private
+   * @param {Record<string, AnyFunction>} notificationsObject
+   * @memberof Tween
+   */
+
   private _on(notificationsObject: Record<string, AnyFunction>) {
     Object.entries(notificationsObject).forEach(
       ([propertyName, notification]) => {
@@ -86,6 +167,16 @@ export abstract class Tween {
     );
   }
 
+  /**
+   * @description Tween event subscription.
+   * @author Alphability <albanmezino@gmail.com>
+   * @private
+   * @param {string} eventName
+   * @param {string} id
+   * @param {AnyFunction} func
+   * @memberof Tween
+   */
+
   private _subscribeItemToEvent(
     eventName: string,
     id: string,
@@ -95,11 +186,29 @@ export abstract class Tween {
     this._on({ [eventId]: func });
   }
 
+  /**
+   * @description Deleting all notifications for a specific event.
+   * @author Alphability <albanmezino@gmail.com>
+   * @private
+   * @param {string} propertyName
+   * @memberof Tween
+   */
+
   private _flush(propertyName: string) {
     delete Tween._notifications[propertyName];
   }
 
-  private _getProxyState(element: HTMLElement, itemIndex: number) {
+  /**
+   * @description Reactive fresh tween state through the use of Proxy.
+   * @author Alphability <albanmezino@gmail.com>
+   * @private
+   * @param {HTMLElement} element
+   * @param {number} itemIndex
+   * @returns {TweenState}
+   * @memberof Tween
+   */
+
+  private _getProxyState(element: HTMLElement, itemIndex: number): TweenState {
     // ⚠️ The state needs to be declared here in order to give a fresh object to each proxy
     const state = JSON.parse(JSON.stringify(Tween._defaultState));
 
@@ -155,6 +264,17 @@ export abstract class Tween {
     });
   }
 
+  /**
+   * @description Adding an element to the tween list.
+   * @author Alphability <albanmezino@gmail.com>
+   * @private
+   * @param {HTMLElement} element
+   * @param {InputTweenOptions} options
+   * @param {number} [itemIndex=0]
+   * @returns {string}
+   * @memberof Tween
+   */
+
   private _addItem(
     element: HTMLElement,
     options: InputTweenOptions,
@@ -181,12 +301,28 @@ export abstract class Tween {
     return itemId;
   }
 
+  /**
+   * @description Removing a tween from the tweens list.
+   * @author Alphability <albanmezino@gmail.com>
+   * @private
+   * @param {string} id
+   * @memberof Tween
+   */
+
   private _removeItem(id: string) {
     Tween._events.forEach((eventName) => {
       this._flush(`${id}-${eventName}`);
     });
     delete Tween._list[id];
   }
+
+  /**
+   * @description Handling tweens when window resizes.
+   * @author Alphability <albanmezino@gmail.com>
+   * @protected
+   * @returns {void}
+   * @memberof Tween
+   */
 
   protected _handleResize(): void {
     if (this._resizingMainHandler || !Tween._reactor) {
@@ -240,6 +376,15 @@ export abstract class Tween {
     });
   }
 
+  /**
+   * @description Adding one or more tweens to the tweens list.
+   * @author Alphability <albanmezino@gmail.com>
+   * @param {(HTMLElement | HTMLElement[])} elements
+   * @param {TweenOptions} options
+   * @returns {(string | string[])}
+   * @memberof Tween
+   */
+
   public add(
     elements: HTMLElement | HTMLElement[],
     options: TweenOptions
@@ -253,6 +398,16 @@ export abstract class Tween {
       return this._addItem(elements, options);
     }
   }
+
+  /**
+   * @description Allowing us to hook on a specific event.
+   * @author Alphability <albanmezino@gmail.com>
+   * @param {string} eventName
+   * @param {string[]} ids
+   * @param {AnyFunction} func
+   * @returns {Tween}
+   * @memberof Tween
+   */
 
   public on(eventName: string, ids: string[], func: AnyFunction): Tween {
     // Events name check (ensuring that every functions will have a reference in order to use removeEventListener).
@@ -271,6 +426,14 @@ export abstract class Tween {
     }
     return this;
   }
+
+  /**
+   * @description Removing tweens from the tweens list by ids.
+   * @author Alphability <albanmezino@gmail.com>
+   * @param {string[]} ids
+   * @returns {Tween}
+   * @memberof Tween
+   */
 
   public remove(ids: string[]): Tween {
     if (Array.isArray(ids)) {

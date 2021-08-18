@@ -11,6 +11,7 @@ export class Alice {
    * @static
    * @memberof Alice
    */
+
   static _scrollEndDelay = 100;
 
   /**
@@ -49,22 +50,44 @@ export class Alice {
 
   static _speed: Speed = new Speed();
 
+  /**
+   * @description Boolean ensuring that we can't initialize multiple scroll listeners.
+   * @private
+   * @memberof Alice
+   */
+
   private _isInitialized = false;
 
-  private _optionsPluginsList: string[] = [];
+  /**
+   * @description Boolean ensuring that we prevent automatic browser scroll on refresh.
+   * @private
+   * @memberof Alice
+   */
 
   private _refreshScroll = false;
+
+  private _optionsPluginsList: string[] = [];
 
   /**
    * Creates an instance of Alice.
    * @author Alphability <albanmezino@gmail.com>
    * @memberof Alice
    */
+
   constructor(optionsPluginsList: string[] = []) {
     this._scrollEventHandler = this._scrollEventHandler.bind(this);
 
     this._optionsPluginsList = optionsPluginsList;
   }
+
+  /**
+   * @description Method used to initialize the plugins only when window is loaded.
+   * @author Alphability <albanmezino@gmail.com>
+   * @private
+   * @param {string[]} pluginsList
+   * @returns {void}
+   * @memberof Alice
+   */
 
   private _initializePlugins(pluginsList: string[]): void {
     if (!pluginsList.length) {
@@ -96,6 +119,7 @@ export class Alice {
    * @private
    * @memberof Alice
    */
+
   private _collectEventValues(): void {
     Alice._reactor.data.scrollTop = window.scrollY || window.pageYOffset;
   }
@@ -106,6 +130,7 @@ export class Alice {
    * @private
    * @memberof Alice
    */
+
   private _scrollEventHandler(): void {
     // Prevent automatic browser scroll on refresh
     if (!this._refreshScroll) {
@@ -119,6 +144,11 @@ export class Alice {
     this._scrollEnd();
   }
 
+  /**
+   * @description Scroll end value refresh.
+   * @private
+   * @memberof Alice
+   */
   private _scrollEnd = debounce(() => {
     Alice._reactor.data.isScrolling = false;
   }, Alice._scrollEndDelay);
@@ -129,6 +159,7 @@ export class Alice {
    * @private
    * @memberof Alice
    */
+
   private _attachListeners(): void {
     window.addEventListener('scroll', this._scrollEventHandler, {
       passive: true,
@@ -141,16 +172,18 @@ export class Alice {
    * @private
    * @memberof Alice
    */
+
   private _detachListeners(): void {
     // ⚡ Avoid memory leak
     window.removeEventListener('scroll', this._scrollEventHandler, false);
   }
 
   /**
-   * @description Initializing the viewport reactive data abilities when the window object is defined.
+   * @description Initializing the scroll reactive data abilities when the window object is defined.
    * @author Alphability <albanmezino@gmail.com>
    * @memberof Alice
    */
+
   public initialize(): void {
     // No multiple init
     // Avoid having multiple listeners at the same time.
@@ -175,29 +208,53 @@ export class Alice {
    * @author Alphability <albanmezino@gmail.com>
    * @memberof Alice
    */
+
   public destroy(): void {
     this._detachListeners();
 
+    this._refreshScroll = false;
     this._isInitialized = false;
   }
 
   /**
-   * @description Reeactive properties object's getter.
+   * @description Reactive scroll properties object's getter.
    * @readonly
    * @type {Calvin}
    * @memberof Alice
    */
+
   get scroll(): Calvin {
     return Alice._reactor;
   }
+
+  /**
+   * @description Reactive viewport properties object's getter.
+   * @readonly
+   * @type {Calvin}
+   * @memberof Alice
+   */
 
   get view(): Calvin {
     return Alice._eva.view;
   }
 
+  /**
+   * @description HTMLElements in view detector.
+   * @readonly
+   * @type {Detect}
+   * @memberof Alice
+   */
+
   get detect(): Detect {
     return Alice._detect;
   }
+
+  /**
+   * @description HTMLELements speed modifier.
+   * @readonly
+   * @type {Speed}
+   * @memberof Alice
+   */
 
   get speed(): Speed {
     return Alice._speed;
