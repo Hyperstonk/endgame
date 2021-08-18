@@ -179,7 +179,7 @@ export class Alice {
   }
 
   get view(): Calvin {
-    return Alice._eva.view;
+    return Alice._eva.viewport;
   }
 
   get detect(): Detect {
