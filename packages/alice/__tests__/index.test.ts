@@ -6,14 +6,26 @@ describe('Success cases', () => {
   test('It should return a scrollTop value different from 0', async () => {
     // Change the scroll value to 1000px.
     global.scrollY = 1000;
+    console.log(
+      '🚀 ~ file: index.test.ts ~ line 9 ~ test ~ global.scrollY',
+      global.scrollY
+    );
 
     const { Alice } = await import('../src/index');
+    console.log('🚀 ~ file: index.test.ts ~ line 12 ~ test ~ Alice', Alice);
     const alice = new Alice();
+    console.log('🚀 ~ file: index.test.ts ~ line 14 ~ test ~ alice', alice);
     alice.initialize();
+    console.log('🚀 ~ file: index.test.ts ~ line 16 ~ test ~ alice', alice);
 
     // Trigger the window scroll event.
     global.dispatchEvent(new Event('scroll'));
     global.dispatchEvent(new Event('scroll'));
+
+    console.log(
+      '🚀 ~ file: index.test.ts ~ line 28 ~ test ~ alice.scroll.data.scrollTop',
+      alice.scroll.data.scrollTop
+    );
 
     expect(alice.scroll.data.scrollTop).toStrictEqual(1000);
 
