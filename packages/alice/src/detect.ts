@@ -41,7 +41,7 @@ export class Detect extends Tween {
 
     const { boundings, coordinates } = tween.state;
     const { triggerOffset } = tween.options;
-    const { height: windowHeight } = Detect._eva.viewport.data;
+    const { height: windowHeight } = Detect._eva.view.data;
 
     // Computing in view detection for each tween.
     tween.state.isInView = isInView(
@@ -79,7 +79,7 @@ export class Detect extends Tween {
         this._handleTweenList();
       },
     });
-    Detect._eva.viewport.watch({
+    Detect._eva.view.watch({
       width: (val) => {
         if (!val) {
           return;

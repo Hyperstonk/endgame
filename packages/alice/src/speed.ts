@@ -59,7 +59,7 @@ export class Speed extends Tween {
 
     const { boundings, coordinates } = tween.state;
     const { triggerOffset } = tween.options;
-    const { height: windowHeight } = Speed._eva.viewport.data;
+    const { height: windowHeight } = Speed._eva.view.data;
 
     // Computing in view detection for each tween.
     tween.state.isInView = isInView(
@@ -179,7 +179,7 @@ export class Speed extends Tween {
         this._handleTweenList();
       },
     });
-    Speed._eva.viewport.watch({
+    Speed._eva.view.watch({
       width: (val) => {
         if (!val) {
           return;
