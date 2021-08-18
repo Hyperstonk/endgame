@@ -1,3 +1,5 @@
+import { join } from 'path';
+
 describe('Success cases', () => {
   test('It should return a scrollTop value different from 0', () => {
     jest.isolateModules(() => {
@@ -5,7 +7,7 @@ describe('Success cases', () => {
       global.scrollY = 1000;
 
       // eslint-disable-next-line
-      const { Alice } = require('../src/index');
+      const { Alice } = require(join(__dirname, '../src/index'));
       const alice = new Alice();
       alice.initialize();
 
@@ -25,7 +27,7 @@ describe('Success cases', () => {
       global.scrollY = 1000;
 
       // eslint-disable-next-line
-      const { Alice } = require('../src/index');
+      const { Alice } = require(join(__dirname, '../src/index'));
       const alice = new Alice();
       alice.initialize();
 
@@ -44,7 +46,7 @@ describe('Success cases', () => {
       global.scrollY = 1000;
 
       // eslint-disable-next-line
-      const { Alice } = require('../src/index');
+      const { Alice } = require(join(__dirname, '../src/index'));
       const alice = new Alice();
       alice.initialize();
       alice.destroy();
