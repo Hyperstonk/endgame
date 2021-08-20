@@ -368,6 +368,7 @@ export abstract class Tween {
        * ⚠️ Force update elements' scroll calculation
        * on the frame following the DOM resets.
        */
+
       if (Tween._reactor.data.scrollTop) {
         Tween._reactor.data.scrollTop -= 1;
       }

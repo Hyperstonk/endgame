@@ -109,6 +109,7 @@ export class Detect extends Tween {
       return;
     }
 
+    Tween._reactor = Detect._reactor;
     Detect.isInitialized = true;
 
     Detect._reactor.watch({
@@ -117,14 +118,14 @@ export class Detect extends Tween {
       },
     });
     Detect._eva.view.watch({
-      width: (val) => {
+      width: (val: number) => {
         if (!val) {
           return;
         }
 
         this._handleResize();
       },
-      height: (val) => {
+      height: (val: number) => {
         if (!val) {
           return;
         }

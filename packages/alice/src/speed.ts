@@ -245,6 +245,7 @@ export class Speed extends Tween {
       return;
     }
 
+    Tween._reactor = Speed._reactor;
     Speed.isInitialized = true;
 
     Speed._reactor.watch({

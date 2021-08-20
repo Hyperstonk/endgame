@@ -217,6 +217,20 @@ export class Alice {
   }
 
   /**
+   * @description Initialize the scroll values at the user chosen time (avoiding unwanted scroll values init time like after a page refresh). With is you can choose to load the scroll elements detection after your page's layout is fully loaded.
+   * @author Alphability <albanmezino@gmail.com>
+   * @memberof Alice
+   */
+  public bootScrollValues(): void {
+    // We can't boot scroll values if Alice has not been initialized.
+    if (!this._isInitialized) {
+      return;
+    }
+
+    this._scrollEventHandler();
+  }
+
+  /**
    * @description Reactive scroll properties object's getter.
    * @readonly
    * @type {Calvin}
