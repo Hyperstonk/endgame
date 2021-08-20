@@ -134,7 +134,6 @@ export class Alice {
   private _scrollEventHandler(): void {
     // Prevent automatic browser scroll on refresh
     if (!this._refreshScroll) {
-      this._refreshScroll = true;
       return;
     }
 
@@ -217,7 +216,7 @@ export class Alice {
   }
 
   /**
-   * @description Initialize the scroll values at the user chosen time (avoiding unwanted scroll values init time like after a page refresh). With is you can choose to load the scroll elements detection after your page's layout is fully loaded.
+   * @description Initialize the scroll values at the user chosen time (preventing automatic browser scroll on refresh). With is you can choose to load the scroll elements detection after your page's layout is fully loaded.
    * @author Alphability <albanmezino@gmail.com>
    * @memberof Alice
    */
@@ -226,6 +225,8 @@ export class Alice {
     if (!this._isInitialized) {
       return;
     }
+
+    this._refreshScroll = true;
 
     this._scrollEventHandler();
   }
