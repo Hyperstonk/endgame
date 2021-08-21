@@ -209,10 +209,18 @@ export class Alice {
    */
 
   public destroy(): void {
+    // Clean scroll listeners and variables
     this._detachListeners();
 
     this._refreshScroll = false;
     this._isInitialized = false;
+
+    // Destroy plugins
+    Alice._detect.destroy();
+    Alice._speed.destroy();
+
+    // Destroy Eva
+    Alice._eva.destroy();
   }
 
   /**
