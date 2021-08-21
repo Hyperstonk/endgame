@@ -157,7 +157,7 @@ export abstract class Tween {
    * @memberof Tween
    */
 
-  private _on(notificationsObject: Record<string, AnyFunction>) {
+  private _onEvent(notificationsObject: Record<string, AnyFunction>) {
     Object.entries(notificationsObject).forEach(
       ([propertyName, notification]) => {
         if (!Tween._notifications[propertyName])
@@ -183,7 +183,7 @@ export abstract class Tween {
     func: AnyFunction
   ) {
     const eventId = makeEventId(id, eventName);
-    this._on({ [eventId]: func });
+    this._onEvent({ [eventId]: func });
   }
 
   /**
@@ -268,10 +268,10 @@ export abstract class Tween {
    * @description Adding an element to the tween list.
    * @author Alphability <albanmezino@gmail.com>
    * @private
+   * @returns {string}
    * @param {HTMLElement} element
    * @param {InputTweenOptions} options
-   * @param {number} [itemIndex=0]
-   * @returns {string}
+   * @param [itemIndex=0]
    * @memberof Tween
    */
 
@@ -377,6 +377,11 @@ export abstract class Tween {
     });
   }
 
+  protected _destroy(): void {
+    const ids = Object.keys(Tween._list);
+    this._remove(ids);
+  }
+
   /**
    * @description Adding one or more tweens to the tweens list.
    * @author Alphability <albanmezino@gmail.com>
@@ -386,7 +391,7 @@ export abstract class Tween {
    * @memberof Tween
    */
 
-  public add(
+  protected _add(
     elements: HTMLElement | HTMLElement[],
     options: TweenOptions
   ): string | string[] {
@@ -410,7 +415,7 @@ export abstract class Tween {
    * @memberof Tween
    */
 
-  public on(eventName: string, ids: string[], func: AnyFunction): Tween {
+  protected _on(eventName: string, ids: string[], func: AnyFunction): Tween {
     // Events name check (ensuring that every functions will have a reference in order to use removeEventListener).
     if (!Tween._events.includes(eventName))
       throw new Error(
@@ -436,7 +441,7 @@ export abstract class Tween {
    * @memberof Tween
    */
 
-  public remove(ids: string[]): Tween {
+  protected _remove(ids: string | string[]): void {
     if (Array.isArray(ids)) {
       ids.forEach((id) => {
         this._removeItem(id);
@@ -445,6 +450,5 @@ export abstract class Tween {
       // Here ids is considered as a single Catalyst id
       this._removeItem(ids);
     }
-    return this;
   }
 }

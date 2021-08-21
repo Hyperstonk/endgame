@@ -3,8 +3,10 @@ import fastdomCore from 'fastdom';
 import fastdomPromised from 'fastdom/extensions/fastdom-promised';
 import { Eva } from '@endgame/eva';
 
+import { AnyFunction } from './contracts';
 import {
   InputTweenOptions,
+  TweenList,
   TweenObject,
   TweenOptions,
 } from './contracts/Tween';
@@ -49,11 +51,11 @@ export class Speed extends Tween {
   /**
    * @description List of speed tween objects.
    * @private
-   * @type {TweenObject[]}
+   * @type {TweenList}
    * @memberof Speed
    */
 
-  private _speedTweensList: TweenObject[] = [];
+  private _speedTweensList: TweenList = {};
 
   /**
    * @description Ensuring that we won't process multiple speed computations at the same time.
@@ -193,19 +195,20 @@ export class Speed extends Tween {
       return;
     }
 
+    const speedTweensArray = Object.values(this._speedTweensList);
+
     // Register scroll tick
     this._ticking = true;
 
-    this._speedTweensList.forEach((tween) => {
+    speedTweensArray.forEach((tween) => {
       this._computeDetection(tween);
       this._computeSpeed(tween);
     });
 
-    this._lerpDone = !this._speedTweensList.filter(
-      ({ state }) => !state.lerpDone
-    ).length;
+    this._lerpDone = !speedTweensArray.filter(({ state }) => !state.lerpDone)
+      .length;
 
-    const speedMutationPromises = this._speedTweensList.map(
+    const speedMutationPromises = speedTweensArray.map(
       async (tween) => await this._applySpeed(tween)
     );
 
@@ -228,7 +231,7 @@ export class Speed extends Tween {
      * ⚡ Avoid memory leak
      * Early return if there is no items to detect.
      */
-    this._speedTweensList.forEach((tween) => {
+    Object.values(this._speedTweensList).forEach((tween) => {
       clearTransform(tween.element);
     });
   }
@@ -280,8 +283,9 @@ export class Speed extends Tween {
    */
 
   public destroy(): void {
-    const ids = Object.keys(Speed._list);
-    this.remove(ids);
+    super._destroy();
+
+    this._speedTweensList = {};
     Speed.isInitialized = false;
   }
 
@@ -304,26 +308,51 @@ export class Speed extends Tween {
       speedAmount: speed * 0.1,
     };
 
-    const ids = super.add(<HTMLElement | HTMLElement[]>elements, options);
+    const ids = super._add(<HTMLElement | HTMLElement[]>elements, options);
 
-    // Update tweens list after registering a new element
-    if (Object.keys(Speed._list)) {
-      this._speedTweensList = Object.values(Speed._list);
-    }
+    // Update detect tweens list after registering a new element
+    const idsList = Array.isArray(ids) ? ids : [ids];
+    idsList.forEach((id) => {
+      this._speedTweensList[id] = Speed._list[id];
+    });
 
     return ids;
   }
 
   /**
-   * @description Removing tweens by id.
+   * @description Allowing us to hook on a specific event.
    * @author Alphability <albanmezino@gmail.com>
-   * @param {string[]} ids
-   * @returns {Tween}
+   * @param {...[eventName: string, ids: string[], func: AnyFunction]} args
+   * @returns {Speed}
    * @memberof Speed
    */
+  public on(
+    ...args: [eventName: string, ids: string[], func: AnyFunction]
+  ): Speed {
+    super._on(...args);
 
-  public remove(ids: string[]): Tween {
-    this._speedTweensList = [];
-    return super.remove(ids);
+    return this;
+  }
+
+  /**
+   * @description Removing tweens by id.
+   * @author Alphability <albanmezino@gmail.com>
+   * @param {(string | string[])} ids
+   * @returns {Speed}
+   * @memberof Speed
+   */
+  public remove(ids: string | string[]): Speed {
+    super._remove(ids);
+
+    if (Array.isArray(ids)) {
+      ids.forEach((id) => {
+        delete this._speedTweensList[id];
+      });
+    } else {
+      // Here ids is considered as a single Catalyst id
+      delete this._speedTweensList[ids];
+    }
+
+    return this;
   }
 }

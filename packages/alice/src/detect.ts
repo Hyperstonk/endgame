@@ -1,7 +1,9 @@
 import { Eva } from '@endgame/eva';
 
+import { AnyFunction } from './contracts';
 import {
   InputTweenOptions,
+  TweenList,
   TweenObject,
   TweenOptions,
 } from './contracts/Tween';
@@ -29,11 +31,11 @@ export class Detect extends Tween {
   /**
    * @description List of detect tween objects.
    * @private
-   * @type {TweenObject[]}
+   * @type {TweenList}
    * @memberof Detect
    */
 
-  private _detectTweensList: TweenObject[] = [];
+  private _detectTweensList: TweenList = {};
 
   /**
    * Creates an instance of Detect.
@@ -90,7 +92,7 @@ export class Detect extends Tween {
    */
 
   private _handleTweenList() {
-    this._detectTweensList.forEach((tween) => {
+    Object.values(this._detectTweensList).forEach((tween) => {
       if (!tween.options.once || !tween.state.isInView) {
         this._computeDetection(tween);
       }
@@ -142,8 +144,9 @@ export class Detect extends Tween {
    */
 
   public destroy(): void {
-    const ids = Object.keys(Detect._list);
-    this.remove(ids);
+    super._destroy();
+
+    this._detectTweensList = {};
     Detect.isInitialized = false;
   }
 
@@ -160,29 +163,54 @@ export class Detect extends Tween {
     elements: any | any[],
     options: InputTweenOptions
   ): string | string[] {
-    const ids = super.add(
+    const ids = super._add(
       <HTMLElement | HTMLElement[]>elements,
       <TweenOptions>options
     );
 
-    // Update tweens list after registering a new element
-    if (Object.keys(Detect._list)) {
-      this._detectTweensList = Object.values(Detect._list);
-    }
+    // Update detect tweens list after registering a new element
+    const idsList = Array.isArray(ids) ? ids : [ids];
+    idsList.forEach((id) => {
+      this._detectTweensList[id] = Detect._list[id];
+    });
 
     return ids;
   }
 
   /**
-   * @description Removing tweens by id.
+   * @description Allowing us to hook on a specific event.
    * @author Alphability <albanmezino@gmail.com>
-   * @param {string[]} ids
-   * @returns {Tween}
+   * @param {...[eventName: string, ids: string[], func: AnyFunction]} args
+   * @returns {Detect}
    * @memberof Detect
    */
+  public on(
+    ...args: [eventName: string, ids: string[], func: AnyFunction]
+  ): Detect {
+    super._on(...args);
 
-  public remove(ids: string[]): Tween {
-    this._detectTweensList = [];
-    return super.remove(ids);
+    return this;
+  }
+
+  /**
+   * @description Removing tweens by id.
+   * @author Alphability <albanmezino@gmail.com>
+   * @param {(string | string[])} ids
+   * @returns {Detect}
+   * @memberof Detect
+   */
+  public remove(ids: string | string[]): Detect {
+    super._remove(ids);
+
+    if (Array.isArray(ids)) {
+      ids.forEach((id) => {
+        delete this._detectTweensList[id];
+      });
+    } else {
+      // Here ids is considered as a single Catalyst id
+      delete this._detectTweensList[ids];
+    }
+
+    return this;
   }
 }
