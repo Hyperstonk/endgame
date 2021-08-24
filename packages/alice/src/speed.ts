@@ -4,14 +4,9 @@ import fastdomPromised from 'fastdom/extensions/fastdom-promised';
 import { Eva } from '@endgame/eva';
 
 import { AnyFunction } from './contracts';
-import {
-  InputTweenOptions,
-  TweenList,
-  TweenObject,
-  TweenOptions,
-} from './contracts/Tween';
+import { InputTweenOptions, TweenList, TweenObject } from './contracts/Tween';
 import { Tween } from './tween';
-import { isInView, getBoundings } from './utils/view';
+import { isInView, getBoundings, getTriggerOffset } from './utils/view';
 import {
   applyTransform,
   clearTransform,
@@ -58,12 +53,14 @@ export class Speed extends Tween {
   private _speedTweensList: TweenList = {};
 
   /**
-   * @description Ensuring that we won't process multiple speed computations at the same time.
+   * @description Ensuring that we won't process multiple speed computations on the same element at the same time.
    * @private
    * @memberof Speed
    */
 
   private _ticking = false;
+
+  private _triggerOffsetComputed = false;
 
   /**
    * @description Ensuring that we'll complete lerp transformations even if the user is not scrolling anymore.
@@ -107,15 +104,34 @@ export class Speed extends Tween {
       );
     }
 
+    if (!this._triggerOffsetComputed) {
+      this._triggerOffsetComputed = true;
+
+      tween.options.triggerOffsets = getTriggerOffset(
+        tween,
+        tween.state.boundings
+      );
+    }
+
     const { boundings, coordinates } = tween.state;
-    const { triggerOffset } = tween.options;
+    const { triggerOffsets } = tween.options;
     const { height: windowHeight } = Speed._eva.view.data;
 
     // Computing in view detection for each tween.
     tween.state.isInView = isInView(
       Speed._reactor.data.scrollTop,
       windowHeight,
-      triggerOffset,
+      triggerOffsets,
+      boundings,
+      coordinates
+    );
+
+    // Computing in view detection for speed computations.
+    tween.state.isInSpeedView = isInView(
+      Speed._reactor.data.scrollTop,
+      windowHeight,
+      // Not considering the trigger offset to stop applying speed when the element is really out of view.
+      [0, 0],
       boundings,
       coordinates
     );
@@ -131,9 +147,10 @@ export class Speed extends Tween {
    */
 
   private _computeSpeed(tween: TweenObject): void {
-    if (!tween.state.isInView) {
+    if (!tween.state.isInSpeedView) {
       return;
     }
+
     const {
       element,
       options: { lerpAmount, speedAmount },
@@ -171,10 +188,10 @@ export class Speed extends Tween {
   private async _applySpeed(tween: TweenObject): Promise<void> {
     const {
       element,
-      state: { isInView, coordinates },
+      state: { isInSpeedView, coordinates },
     } = tween;
 
-    if (!isInView) {
+    if (!isInSpeedView) {
       return;
     }
 
@@ -200,10 +217,12 @@ export class Speed extends Tween {
     // Register scroll tick
     this._ticking = true;
 
-    speedTweensArray.forEach((tween) => {
-      this._computeDetection(tween);
+    const speedMeasurementPromises = speedTweensArray.map(async (tween) => {
+      await this._computeDetection(tween);
       this._computeSpeed(tween);
     });
+
+    await Promise.all(speedMeasurementPromises);
 
     this._lerpDone = !speedTweensArray.filter(({ state }) => !state.lerpDone)
       .length;
@@ -211,7 +230,6 @@ export class Speed extends Tween {
     const speedMutationPromises = speedTweensArray.map(
       async (tween) => await this._applySpeed(tween)
     );
-
     await Promise.all(speedMutationPromises);
 
     /**
@@ -227,6 +245,9 @@ export class Speed extends Tween {
   }, Speed._sixtyFpsToMs);
 
   private _handleSpeedResize(): void {
+    // Will recompute offsets
+    this._triggerOffsetComputed = false;
+
     /**
      * ⚡ Avoid memory leak
      * Early return if there is no items to detect.
@@ -265,7 +286,7 @@ export class Speed extends Tween {
         this._handleResize();
         this._handleSpeedResize();
       },
-      height: (val) => {
+      outerHeight: (val) => {
         if (!val) {
           return;
         }
@@ -300,14 +321,8 @@ export class Speed extends Tween {
 
   public add(
     elements: any | any[],
-    { speed = 0, lerp = 0, ...otherOptions }: InputTweenOptions
+    options: InputTweenOptions
   ): string | string[] {
-    const options = <TweenOptions>{
-      ...otherOptions,
-      lerpAmount: lerp * 0.1,
-      speedAmount: speed * 0.1,
-    };
-
     const ids = super._add(<HTMLElement | HTMLElement[]>elements, options);
 
     // Update detect tweens list after registering a new element

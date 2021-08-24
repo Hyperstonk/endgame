@@ -17,16 +17,16 @@ export interface TweenState {
     scrollOffset: number;
   };
   isInView: boolean;
+  isInSpeedView: boolean;
   collantEvent: string;
 }
 
-export type Offset = string | number;
-export type TriggerOffset = Offset | [Offset, Offset];
+export type TriggerOffsets = [number, number];
 
 export interface TweenOptions {
   addClass: boolean;
   once: boolean;
-  triggerOffset: TriggerOffset;
+  triggerOffsets: TriggerOffsets;
   lerpAmount: number;
   speedAmount: number;
   collantOffset: {
@@ -36,10 +36,13 @@ export interface TweenOptions {
   position: string;
 }
 
+type InputOffset = string | number;
+type InputTriggerOffset = InputOffset | [InputOffset, InputOffset];
+
 export interface InputTweenOptions {
   addClass?: boolean;
   once?: boolean;
-  triggerOffset?: TriggerOffset;
+  triggerOffset?: InputTriggerOffset;
   lerp?: number;
   speed?: number;
   collantOffset?: {
@@ -52,6 +55,7 @@ export interface InputTweenOptions {
 export interface TweenObject {
   element: HTMLElement;
   itemIndex: number;
+  inputOptions: InputTweenOptions;
   options: TweenOptions;
   state: TweenState;
 }

@@ -84,7 +84,7 @@ export abstract class Tween {
   static _defaultOptions: TweenOptions = {
     addClass: true,
     once: false,
-    triggerOffset: 0,
+    triggerOffsets: [0, 0],
     lerpAmount: 0,
     speedAmount: 0,
     collantOffset: {
@@ -115,7 +115,10 @@ export abstract class Tween {
       parsedOffset: 0,
       scrollOffset: 0,
     },
+    // In view considering triggerOffset
     isInView: false,
+    // In view not considering triggerOffset for speed computations
+    isInSpeedView: false,
     collantEvent: '',
   };
 
@@ -198,6 +201,31 @@ export abstract class Tween {
     delete Tween._notifications[propertyName];
   }
 
+  private _initSpeedAndLerpAmounts(
+    speed = Tween._defaultOptions.speedAmount,
+    lerp = Tween._defaultOptions.lerpAmount
+  ) {
+    return {
+      lerpAmount: lerp * 0.1,
+      speedAmount: speed * 0.1,
+    };
+  }
+
+  private _initOptions(inputOptions: InputTweenOptions): TweenOptions {
+    const { speed, lerp, ...cleanOptions } = inputOptions;
+
+    // Deleting unwanted properties
+    delete cleanOptions.triggerOffset;
+
+    const options: TweenOptions = {
+      ...Tween._defaultOptions,
+      ...(cleanOptions as TweenOptions),
+      ...this._initSpeedAndLerpAmounts(speed, lerp),
+    };
+
+    return options;
+  }
+
   /**
    * @description Reactive fresh tween state through the use of Proxy.
    * @author Alphability <albanmezino@gmail.com>
@@ -277,12 +305,14 @@ export abstract class Tween {
 
   private _addItem(
     element: HTMLElement,
-    options: InputTweenOptions,
+    inputOptions: InputTweenOptions,
     itemIndex = 0
   ): string {
     // Keep updating _idTicket in order to always attach a unique id to your new Catalyst items
     Tween._idTicket += 1;
     const itemId = `${Tween._namespace}-${Tween._idTicket}`;
+
+    const processedOptions = this._initOptions(inputOptions);
 
     /**
      * itemIndex will be updated if the DOMElement came from an array
@@ -290,10 +320,8 @@ export abstract class Tween {
     Tween._list[itemId] = {
       element,
       itemIndex,
-      options: {
-        ...Tween._defaultOptions,
-        ...(<TweenOptions>options),
-      },
+      inputOptions,
+      options: processedOptions,
       state: this._getProxyState(element, itemIndex),
     };
     Tween._list[itemId].state.itemId = itemId;
@@ -351,6 +379,7 @@ export abstract class Tween {
       item.state.collant.scrollOffset =
         Tween._defaultState.collant.scrollOffset;
       item.state.isInView = Tween._defaultState.isInView;
+      item.state.isInSpeedView = Tween._defaultState.isInSpeedView;
       item.state.collantEvent = Tween._defaultState.collantEvent;
     });
 
@@ -393,7 +422,7 @@ export abstract class Tween {
 
   protected _add(
     elements: HTMLElement | HTMLElement[],
-    options: TweenOptions
+    options: InputTweenOptions
   ): string | string[] {
     if (Array.isArray(elements)) {
       return elements.map((element, itemIndex) =>

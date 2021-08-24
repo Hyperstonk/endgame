@@ -121,7 +121,10 @@ export class Alice {
    */
 
   private _collectEventValues(): void {
-    Alice._reactor.data.scrollTop = window.scrollY || window.pageYOffset;
+    const scrollValue = window.scrollY || window.pageYOffset;
+    if (Alice._reactor.data.scrollTop !== scrollValue) {
+      Alice._reactor.data.scrollTop = scrollValue;
+    }
   }
 
   /**
@@ -137,7 +140,9 @@ export class Alice {
       return;
     }
 
-    Alice._reactor.data.isScrolling = true;
+    if (!Alice._reactor.data.isScrolling) {
+      Alice._reactor.data.isScrolling = true;
+    }
     this._collectEventValues();
 
     this._scrollEnd();

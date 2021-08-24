@@ -1,7 +1,11 @@
 import fastdomCore from 'fastdom';
 import fastdomPromised from 'fastdom/extensions/fastdom-promised';
 
-import { TriggerOffset, TweenCoordinates } from '../contracts/Tween';
+import {
+  TriggerOffsets,
+  TweenCoordinates,
+  TweenObject,
+} from '../contracts/Tween';
 import { Boundings } from '../contracts/View';
 
 // fastdom extension
@@ -28,10 +32,42 @@ export const getBoundings = async (
   });
 };
 
+export const getTriggerOffset = (
+  { inputOptions: { triggerOffset } }: TweenObject,
+  boundings: Boundings
+): TriggerOffsets => {
+  const inputOffset = !Array.isArray(triggerOffset)
+    ? [triggerOffset, triggerOffset]
+    : triggerOffset;
+
+  const {
+    top: triggerOffsetTop,
+    bottom: triggerOffsetBottom,
+  } = inputOffset.reduce(
+    (acc, offset, index) => {
+      let parsedOffset = null;
+      const key = index === 0 ? 'top' : 'bottom';
+      if (typeof offset === 'number' && !isNaN(offset)) {
+        parsedOffset = offset;
+      } else if (typeof offset === 'string' && offset.endsWith('vh')) {
+        parsedOffset =
+          parseFloat(offset.replace('vh', '')) * (window.innerHeight / 100);
+      } else if (typeof offset === 'string' && offset.endsWith('%')) {
+        parsedOffset =
+          parseInt(offset.replace('%', ''), 10) * (boundings.height / 100);
+      }
+      return { ...acc, [key]: parsedOffset };
+    },
+    { top: 0, bottom: 0 }
+  );
+
+  return [triggerOffsetTop, triggerOffsetBottom];
+};
+
 export const isInView = (
   scrollTop: number,
   windowHeight: number,
-  triggerOffset: TriggerOffset,
+  triggerOffsets: TriggerOffsets,
   boundings: Boundings = {
     top: 0,
     right: 0,
@@ -46,33 +82,7 @@ export const isInView = (
 ): boolean => {
   const { top, bottom } = boundings;
   const { y } = coordinates;
-
-  const inputOffset = !Array.isArray(triggerOffset)
-    ? [triggerOffset, triggerOffset]
-    : triggerOffset;
-
-  const {
-    top: triggerOffsetTop,
-    bottom: triggerOffsetBottom,
-  } = inputOffset.reduce(
-    (acc, offset, index) => {
-      let parsedOffset = null;
-      const key = index === 0 ? 'top' : 'bottom';
-
-      if (typeof offset === 'number' && !isNaN(offset)) {
-        parsedOffset = offset;
-      } else if (typeof offset === 'string' && offset.endsWith('vh')) {
-        parsedOffset =
-          parseFloat(offset.replace('vh', '')) * (windowHeight / 100);
-      } else if (typeof offset === 'string' && offset.endsWith('%')) {
-        parsedOffset =
-          parseInt(offset.replace('%', ''), 10) * (boundings.height / 100);
-      }
-
-      return { ...acc, [key]: parsedOffset };
-    },
-    { top: 0, bottom: 0 }
-  );
+  const [triggerOffsetTop, triggerOffsetBottom] = triggerOffsets;
 
   const isUnderWindow = top + triggerOffsetTop + y - windowHeight > scrollTop;
   const isAboveWindow = bottom - triggerOffsetBottom + y < scrollTop;

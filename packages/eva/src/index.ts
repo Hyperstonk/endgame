@@ -18,7 +18,12 @@ export class Eva {
    * @memberof Eva
    */
 
-  static _reactor: Calvin = new Calvin({ width: 0, height: 0 });
+  static _reactor: Calvin = new Calvin({
+    width: 0,
+    height: 0,
+    outerWidth: 0,
+    outerHeight: 0,
+  });
 
   /**
    * @description Boolean used to allow elements resize transitions dampening.
@@ -54,8 +59,18 @@ export class Eva {
    */
 
   private _collectWindowValues(): void {
-    Eva._reactor.data.width = window.innerWidth;
-    Eva._reactor.data.height = window.innerHeight;
+    if (Eva._reactor.data.width !== window.innerWidth) {
+      Eva._reactor.data.width = window.innerWidth;
+    }
+    if (Eva._reactor.data.height !== window.innerHeight) {
+      Eva._reactor.data.height = window.innerHeight;
+    }
+    if (Eva._reactor.data.outerWidth !== window.outerWidth) {
+      Eva._reactor.data.outerWidth = window.outerWidth;
+    }
+    if (Eva._reactor.data.outerHeight !== window.outerHeight) {
+      Eva._reactor.data.outerHeight = window.outerHeight;
+    }
   }
 
   /**
