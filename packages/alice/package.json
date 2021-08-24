@@ -17,6 +17,7 @@
     "test:watch": "jest __tests__ --watchAll --runInBand"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.172",
     "@types/raf": "^3.4.0"
   },
   "dependencies": {
