@@ -201,13 +201,25 @@ export class Detect extends Tween {
   }
 
   /**
-   * @description Adding new tweens to the detection list.
+   * @description Adding new tween to the detection list.
    * @author Alphability <albanmezino@gmail.com>
-   * @param {(any | any[])} elements
+   * @param {*} element
    * @param {InputTweenOptions} options
-   * @returns {(string | string[])}
+   * @returns {string}
    * @memberof Detect
    */
+  public add(element: any, options: InputTweenOptions): string;
+
+  /**
+   * @description Adding new tweens to the detection list.
+   * @author Alphability <albanmezino@gmail.com>
+   * @param {any[]} elements
+   * @param {InputTweenOptions} options
+   * @returns {string[]}
+   * @memberof Detect
+   */
+
+  public add(elements: any[], options: InputTweenOptions): string[];
 
   public add(
     elements: any | any[],

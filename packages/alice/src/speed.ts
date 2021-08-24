@@ -311,13 +311,26 @@ export class Speed extends Tween {
   }
 
   /**
-   * @description Adding new tweens to the detection list.
+   * @description Adding new tween to the detection list.
    * @author Alphability <albanmezino@gmail.com>
-   * @param {(any | any[])} elements
-   * @param {InputTweenOptions} { speed = 0, lerp = 0, ...otherOptions }
-   * @returns {(string | string[])}
+   * @param {*} element
+   * @param {InputTweenOptions} options
+   * @returns {string}
    * @memberof Speed
    */
+
+  public add(element: any, options: InputTweenOptions): string;
+
+  /**
+   * @description Adding new tweens to the detection list.
+   * @author Alphability <albanmezino@gmail.com>
+   * @param {any[]} elements
+   * @param {InputTweenOptions} options
+   * @returns {string[]}
+   * @memberof Speed
+   */
+
+  public add(elements: any[], options: InputTweenOptions): string[];
 
   public add(
     elements: any | any[],
