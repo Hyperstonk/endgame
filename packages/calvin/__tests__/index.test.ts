@@ -93,4 +93,25 @@ describe('Success cases', () => {
 
     calvin.data.test1 = 1;
   });
+
+  test('It should remove the watcher before it beeing called', () => {
+    const calvin = new Calvin({ test1: 0 });
+    calvin.computed({
+      test2() {
+        return this.test1 + 1;
+      },
+    });
+
+    const watcherFunction = jest.fn();
+
+    const watcherIds = calvin.watch({
+      test2: watcherFunction,
+    });
+
+    calvin.unwatch(watcherIds);
+
+    calvin.data.test1 = 1;
+
+    expect(watcherFunction).not.toHaveBeenCalled();
+  });
 });
