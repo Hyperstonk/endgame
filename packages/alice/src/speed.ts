@@ -104,28 +104,32 @@ export class Speed extends Tween {
       );
     }
 
-    if (!this._triggerOffsetComputed) {
-      this._triggerOffsetComputed = true;
-
-      tween.options.triggerOffsets = getTriggerOffset(
-        tween,
-        tween.state.boundings
-      );
-    }
-
     const { boundings, coordinates } = tween.state;
-    const { triggerOffsets } = tween.options;
     const { height: windowHeight } = Speed._eva.view.data;
 
-    // Computing in view detection for each tween.
-    if (tween.options.addClass) {
-      tween.state.isInView = isInView(
-        Speed._reactor.data.scrollTop,
-        windowHeight,
-        triggerOffsets,
-        boundings,
-        coordinates
-      );
+    // If not once or not already in view.
+    if (!tween.options.once || !tween.state.isInView) {
+      if (!this._triggerOffsetComputed) {
+        this._triggerOffsetComputed = true;
+
+        tween.options.triggerOffsets = getTriggerOffset(
+          tween,
+          tween.state.boundings
+        );
+      }
+
+      const { triggerOffsets } = tween.options;
+
+      // Computing in view detection for each tween.
+      if (tween.options.addClass) {
+        tween.state.isInView = isInView(
+          Speed._reactor.data.scrollTop,
+          windowHeight,
+          triggerOffsets,
+          boundings,
+          coordinates
+        );
+      }
     }
 
     // Computing in view detection for speed computations.
