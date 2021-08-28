@@ -6,6 +6,13 @@ type Computed = (this: Record<string, any>) => any;
 
 export class Calvin {
   /**
+   * @description Unique id incremented for each new watcher
+   * @private
+   * @memberof Calvin
+   */
+  private _watcherAutoNumber = 0;
+
+  /**
    * @description Proxy containing reactive data and computed properties.
    * @private
    * @type {Record<string, any>}
@@ -19,7 +26,7 @@ export class Calvin {
    * @type {Record<string, any>}
    * @memberof Calvin
    */
-  private _watchers: Record<string, any> = {};
+  private _watchers: Record<string, Record<string, any>> = {};
 
   /**
    * @description State used to avoid external call to computed properties setters
@@ -138,8 +145,15 @@ export class Calvin {
    * @memberof Calvin
    */
   private _notify(property: string, value: any): void {
-    if (this._watchers[property] && this._watchers[property].length >= 1) {
-      this._watchers[property].forEach((watcher: Watcher) => watcher(value));
+    if (
+      this._watchers[property] &&
+      Object.keys(this._watchers[property]).length >= 1
+    ) {
+      Object.values(this._watchers[property]).forEach((watcher: Watcher) => {
+        if (watcher) {
+          watcher(value);
+        }
+      });
     }
   }
 
@@ -206,13 +220,20 @@ export class Calvin {
    * @param {Watcher} watcher
    * @memberof Calvin
    */
-  private _observe(property: string, watcher: Watcher): void {
+  private _observe(property: string, watcher: Watcher): string {
     if (!this._watchers[property]) {
-      this._watchers[property] = [];
+      this._watchers[property] = {};
     }
 
     // Storing the watcher function
-    this._watchers[property].push(watcher);
+    this._watchers[property][this._watcherAutoNumber] = watcher;
+
+    // Increment the watchers id to keep it a unique key.
+    this._watcherAutoNumber += 1;
+
+    // Returning the function id
+    // property-index
+    return `${property}-${this._watcherAutoNumber - 1}`;
   }
 
   /**
@@ -235,12 +256,31 @@ export class Calvin {
    * @param {Record<string, Watcher>} watchers
    * @memberof Calvin
    */
-  public watch(watchers: Record<string, Watcher>): void {
+  public watch(watchers: Record<string, Watcher>): string[] {
+    const ids: string[] = [];
+
     for (const property in watchers) {
       if (watchers.hasOwnProperty(property)) {
-        this._observe(property, watchers[property]);
+        ids.push(this._observe(property, watchers[property]));
       }
     }
+
+    return ids;
+  }
+
+  public unwatch(watchersIds: string[]): Calvin {
+    for (const id of watchersIds) {
+      const [property, uniqueId] = id.split('-');
+
+      if (
+        this._watchers.hasOwnProperty(property) &&
+        this._watchers[property].hasOwnProperty(uniqueId)
+      ) {
+        delete this._watchers[property][uniqueId];
+      }
+    }
+
+    return this;
   }
 
   /**

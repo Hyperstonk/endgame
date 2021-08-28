@@ -1,7 +1,7 @@
 {
-  "name": "@endgame/calvin",
+  "name": "@endgame/alice",
   "version": "1.0.6-alpha.19",
-  "description": "Changing Any Lifeless Value Into Notifications",
+  "description": "Another Library Implementing Captivating Effects",
   "repository": "MBDW-Studio/endgame",
   "author": "Mental Breakdown <hello@mentalbreakdown.studio> (https://mentalbreakdown.studio)",
   "main": "dist/index.js",
@@ -15,6 +15,17 @@
     "watch": "tsc -w",
     "test": "jest __tests__ --collectCoverage --runInBand",
     "test:watch": "jest __tests__ --watchAll --runInBand"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.14.172",
+    "@types/raf": "^3.4.0"
+  },
+  "dependencies": {
+    "@endgame/calvin": "^1.0.6-alpha.19",
+    "@endgame/eva": "^1.0.6-alpha.19",
+    "fastdom": "^1.0.10",
+    "lodash": "^4.17.21",
+    "raf": "^3.4.1"
   },
   "publishConfig": {
     "access": "public"

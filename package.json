@@ -1,18 +1,29 @@
 {
   "name": "endgame",
   "private": true,
-  "description": "",
+  "description": "Make front-end easy. Viewport detection, parallax effects, and other stuff.",
+  "keywords": [
+    "front-end",
+    "parallax",
+    "viewport",
+    "detection",
+    "a11y"
+  ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Alphability/endgame.git"
+    "url": "git+https://github.com/MBDW-Studio/endgame.git"
   },
-  "author": "Alphability <albanmezino@gmail.com> (https://albanmezino.com)",
-  "homepage": "https://github.com/Alphability/endgame#readme",
+  "author": "Mental Breakdown <hello@mentalbreakdown.studio> (https://mentalbreakdown.studio)",
+  "homepage": "https://github.com/MBDW-Studio/endgame#readme",
   "license": "MIT",
   "workspaces": [
     "packages/*"
   ],
   "scripts": {
+    "workspace:clean": "yarn clean:artifacts && yarn clean:packages && yarn clean:root && yarn",
+    "clean:artifacts": "lerna run clean --parallel",
+    "clean:packages": "lerna clean --yes",
+    "clean:root": "rm -rf node_modules",
     "postinstall": "lerna link",
     "snyk-protect": "snyk protect",
     "prepare": "yarn snyk-protect",

@@ -13,6 +13,7 @@ import { PackageConfig } from './package';
 interface Config {
   rootDir: string;
   input?: string;
+  outputFilename: string;
   replace: Record<string, unknown>;
   alias: Record<string, unknown>;
   externals: string[];
@@ -25,6 +26,7 @@ export default function rollupConfig(
   const {
     rootDir = process.cwd(),
     input = 'src/index.ts',
+    outputFilename = 'index',
     replace = {},
     alias = {},
     externals = [],
@@ -40,8 +42,8 @@ export default function rollupConfig(
     input: path.resolve(rootDir, input),
     output: {
       dir: path.resolve(rootDir, 'dist'),
-      entryFileNames: `index.js`,
-      chunkFileNames: `index-[name].js`,
+      entryFileNames: `${outputFilename}.js`,
+      chunkFileNames: `${outputFilename}-[name].js`,
       format: 'cjs',
       preferConst: true,
       sourcemap: true,
@@ -67,10 +69,10 @@ export default function rollupConfig(
         banner: [
           '/*!',
           ` * ${pkg.name} v${pkg.version} © 2021-${new Date().getFullYear()}`,
-          ' * Spacefold.',
+          ' * Endgame.',
           ' * All Rights Reserved.',
-          ' * Repository: https://github.com/Alphability/spacefold',
-          ' * Website: https://spacefold.vision',
+          ' * Repository: https://github.com/MBDW-Studio/endgame',
+          ' * Website: https://mentalbreakdown.studio',
           '*/',
         ].join('\n'),
       }),

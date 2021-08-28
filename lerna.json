@@ -1,5 +1,5 @@
 {
-  "version": "1.0.6",
+  "version": "1.0.6-alpha.19",
   "npmClient": "yarn",
   "useWorkspaces": true,
   "packages": [
@@ -14,7 +14,7 @@
       "ignoreChanges": [
         "**/*.md",
         "*.md",
-        "**/*.test.ts",
+        "**/__tests__/**",
         ".editorconfig",
         ".eslintrc.js",
         ".gitignore",

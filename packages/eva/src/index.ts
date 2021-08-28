@@ -1,40 +1,54 @@
-import { debounce } from 'lodash';
+import debounce from 'lodash/debounce';
 import { Calvin } from '@endgame/calvin';
 
 export class Eva {
   /**
+   * @description The resize end delay in ms.
+   * @static
+   * @memberof Eva
+   */
+
+  static _resizeEndDelay = 200;
+
+  /**
    * @description Object allowing the use of reactive data.
-   * @private
+   * Storing default window values before any resize event.
+   * @static
    * @type {Calvin}
    * @memberof Eva
    */
 
-  private _reactor: Calvin;
+  static _reactor: Calvin = new Calvin({
+    width: 0,
+    height: 0,
+    outerWidth: 0,
+    outerHeight: 0,
+  });
 
   /**
    * @description Boolean used to allow elements resize transitions dampening.
    * @private
    * @memberof Eva
    */
+
   private _dampeningTransitions = false;
 
   /**
-   * @description The resize end delay in ms.
+   * @description Boolean ensuring that we can't initialize multiple resize listeners.
    * @private
    * @memberof Eva
    */
-  private _resizeEndDelay = 200;
+
+  private _isInitialized = false;
 
   /**
    * Creates an instance of Eva.
    * @author Alphability <albanmezino@gmail.com>
    * @memberof Eva
    */
+
   constructor() {
     this._resizeEventHandler = this._resizeEventHandler.bind(this);
-
-    // Store default window values before any resize event
-    this._reactor = new Calvin({ width: 0, height: 0 });
   }
 
   /**
@@ -43,9 +57,20 @@ export class Eva {
    * @private
    * @memberof Eva
    */
+
   private _collectWindowValues(): void {
-    this._reactor.data.width = window.innerWidth;
-    this._reactor.data.height = window.innerHeight;
+    if (Eva._reactor.data.width !== window.innerWidth) {
+      Eva._reactor.data.width = window.innerWidth;
+    }
+    if (Eva._reactor.data.height !== window.innerHeight) {
+      Eva._reactor.data.height = window.innerHeight;
+    }
+    if (Eva._reactor.data.outerWidth !== window.outerWidth) {
+      Eva._reactor.data.outerWidth = window.outerWidth;
+    }
+    if (Eva._reactor.data.outerHeight !== window.outerHeight) {
+      Eva._reactor.data.outerHeight = window.outerHeight;
+    }
   }
 
   /**
@@ -54,6 +79,7 @@ export class Eva {
    * @private
    * @memberof Eva
    */
+
   private _resizeEventHandler(): void {
     this._dampTransitions();
     this._resizeEnd();
@@ -66,6 +92,7 @@ export class Eva {
    * @returns {void}
    * @memberof Eva
    */
+
   private _dampTransitions(): void {
     if (this._dampeningTransitions) {
       return;
@@ -80,13 +107,14 @@ export class Eva {
    * @private
    * @memberof Eva
    */
+
   private _resizeEnd = debounce(() => {
     this._collectWindowValues();
 
     document.documentElement.classList.remove('resizing');
 
     this._dampeningTransitions = false;
-  }, this._resizeEndDelay);
+  }, Eva._resizeEndDelay);
 
   /**
    * @description Hooks onto the resize event.
@@ -94,6 +122,7 @@ export class Eva {
    * @private
    * @memberof Eva
    */
+
   private _attachListeners(): void {
     window.addEventListener('resize', this._resizeEventHandler, {
       passive: true,
@@ -106,6 +135,7 @@ export class Eva {
    * @private
    * @memberof Eva
    */
+
   private _detachListeners(): void {
     // ⚡ Avoid memory leak
     window.removeEventListener('resize', this._resizeEventHandler, false);
@@ -116,7 +146,16 @@ export class Eva {
    * @author Alphability <albanmezino@gmail.com>
    * @memberof Eva
    */
+
   public initialize(): void {
+    // No multiple init
+    // Avoid having multiple listeners at the same time.
+    if (this._isInitialized) {
+      return;
+    }
+
+    this._isInitialized = true;
+
     // Register the resize event
     this._attachListeners();
 
@@ -131,6 +170,8 @@ export class Eva {
    */
   public destroy(): void {
     this._detachListeners();
+
+    this._isInitialized = false;
   }
 
   /**
@@ -139,7 +180,7 @@ export class Eva {
    * @type {Calvin}
    * @memberof Eva
    */
-  get viewport(): Calvin {
-    return this._reactor;
+  get view(): Calvin {
+    return Eva._reactor;
   }
 }
