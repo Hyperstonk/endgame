@@ -321,30 +321,30 @@ export class Speed extends Tween {
   /**
    * @description Adding new tween to the detection list.
    * @author Alphability <albanmezino@gmail.com>
-   * @param {*} element
+   * @param {HTMLElement} element
    * @param {InputTweenOptions} options
    * @returns {string}
    * @memberof Speed
    */
 
-  public add(element: any, options: InputTweenOptions): string;
+  public add(element: HTMLElement, options: InputTweenOptions): string;
 
   /**
    * @description Adding new tweens to the detection list.
    * @author Alphability <albanmezino@gmail.com>
-   * @param {any[]} elements
+   * @param {HTMLElement[]} elements
    * @param {InputTweenOptions} options
    * @returns {string[]}
    * @memberof Speed
    */
 
-  public add(elements: any[], options: InputTweenOptions): string[];
+  public add(elements: HTMLElement[], options: InputTweenOptions): string[];
 
   public add(
-    elements: any | any[],
+    elements: HTMLElement | HTMLElement[],
     options: InputTweenOptions
   ): string | string[] {
-    const ids = super._add(<HTMLElement | HTMLElement[]>elements, options);
+    const ids = super._add(elements, options);
 
     // Update detect tweens list after registering a new element
     const idsList = Array.isArray(ids) ? ids : [ids];
