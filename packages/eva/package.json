@@ -1,6 +1,6 @@
 {
   "name": "@endgame/eva",
-  "version": "1.0.7-alpha.1",
+  "version": "1.0.7-alpha.2",
   "description": "Ease Viewport Access",
   "repository": "MBDW-Studio/endgame",
   "author": "Mental Breakdown <hello@mentalbreakdown.studio> (https://mentalbreakdown.studio)",
@@ -20,7 +20,7 @@
     "@types/lodash": "^4.14.172"
   },
   "dependencies": {
-    "@endgame/calvin": "^1.0.7-alpha.1",
+    "@endgame/calvin": "^1.0.7-alpha.2",
     "lodash": "^4.17.21"
   },
   "publishConfig": {
