@@ -173,16 +173,22 @@ export class Detect extends Tween {
           return;
         }
 
-        this._handleResize();
+        // Clear transforms before cleaning tweens
         this._handleDetectResize();
+
+        // Handling all tweens global reset during resize (debounced by using static method).
+        Tween._handleResize();
       },
       outerHeight: (val: number) => {
         if (!val) {
           return;
         }
 
-        this._handleResize();
+        // Clear transforms before cleaning tweens
         this._handleDetectResize();
+
+        // Handling all tweens global reset during resize (debounced by using static method).
+        Tween._handleResize();
       },
     });
   }

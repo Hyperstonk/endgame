@@ -5,7 +5,7 @@ export interface TweenCoordinates {
   y: number;
 }
 
-export interface TweenState {
+export interface TweenStateDefault {
   itemId: string | null;
   classes: string[];
   boundings: Boundings | null;
@@ -19,6 +19,10 @@ export interface TweenState {
   isInView: boolean;
   isInSpeedView: boolean;
   collantEvent: string;
+}
+
+export interface TweenState extends TweenStateDefault {
+  itemId: string;
 }
 
 export type TriggerOffsets = [number, number];

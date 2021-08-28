@@ -118,13 +118,15 @@ export class Speed extends Tween {
     const { height: windowHeight } = Speed._eva.view.data;
 
     // Computing in view detection for each tween.
-    tween.state.isInView = isInView(
-      Speed._reactor.data.scrollTop,
-      windowHeight,
-      triggerOffsets,
-      boundings,
-      coordinates
-    );
+    if (tween.options.addClass) {
+      tween.state.isInView = isInView(
+        Speed._reactor.data.scrollTop,
+        windowHeight,
+        triggerOffsets,
+        boundings,
+        coordinates
+      );
+    }
 
     // Computing in view detection for speed computations.
     tween.state.isInSpeedView = isInView(
@@ -283,16 +285,22 @@ export class Speed extends Tween {
           return;
         }
 
-        this._handleResize();
+        // Clear transforms before cleaning tweens
         this._handleSpeedResize();
+
+        // Handling all tweens global reset during resize (debounced by using static method).
+        Tween._handleResize();
       },
       outerHeight: (val) => {
         if (!val) {
           return;
         }
 
-        this._handleResize();
+        // Clear transforms before cleaning tweens
         this._handleSpeedResize();
+
+        // Handling all tweens global reset during resize (debounced by using static method).
+        Tween._handleResize();
       },
     });
   }

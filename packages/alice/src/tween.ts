@@ -1,3 +1,4 @@
+import debounce from 'lodash/debounce';
 import raf from 'raf';
 import fastdomCore from 'fastdom';
 import fastdomPromised from 'fastdom/extensions/fastdom-promised';
@@ -9,6 +10,7 @@ import {
   TweenList,
   TweenState,
   InputTweenOptions,
+  TweenStateDefault,
 } from './contracts/Tween';
 
 // fastdom extension
@@ -97,11 +99,11 @@ export abstract class Tween {
   /**
    * @description Default tween state.
    * @static
-   * @type {TweenState}
+   * @type {TweenStateDefault}
    * @memberof Tween
    */
 
-  static _defaultState: TweenState = {
+  static _defaultState: TweenStateDefault = {
     itemId: null,
     classes: [],
     boundings: null,
@@ -123,12 +125,64 @@ export abstract class Tween {
   };
 
   /**
-   * @description Boolean used to debounce the tweens reset during window resize.
-   * @private
+   * @description Number (ms) used to debounce the tweens reset during window resize.
+   * @static
    * @memberof Tween
    */
 
-  private _resizingMainHandler = false;
+  static _resizeDelay = 300;
+
+  /**
+   * @description Handling tweens when window resizes.
+   * @author Alphability <albanmezino@gmail.com>
+   * @static
+   * @memberof Tween
+   */
+  static _handleResize = debounce(() => {
+    if (!Tween._reactor) {
+      return;
+    }
+
+    // Read DOM
+    Object.values(Tween._list).forEach((item) => {
+      /**
+       * Resetting each prop that has something to do with the window (positions, scroll, etc.).
+       * ⚠️ In order to reset a Proxy prop
+       * you need to go to the furthest nested level.
+       * NOTE: Do not reset classes here. They're handled in the proxy itself.
+       */
+
+      // Reset boundings since they're based on the window's layout
+      item.state.boundings = Tween._defaultState.boundings;
+      item.state.targetBoundings = Tween._defaultState.targetBoundings;
+
+      // Reset the transform coordinates since the transforms are cleared during the resize
+      item.state.coordinates.x = Tween._defaultState.coordinates.x;
+      item.state.coordinates.y = Tween._defaultState.coordinates.y;
+
+      // Reset lerp since the transforms have been cleared
+      item.state.lerpDone = Tween._defaultState.lerpDone;
+
+      // NOTE: In view are computed during the scroll. The resize handler force a scroll update at the end of the function. So, no need to reset inview values.
+
+      item.state.collant.parsedOffset =
+        Tween._defaultState.collant.parsedOffset;
+      item.state.collant.scrollOffset =
+        Tween._defaultState.collant.scrollOffset;
+      item.state.collantEvent = Tween._defaultState.collantEvent;
+    });
+
+    raf(() => {
+      /**
+       * ⚠️ Force update elements' scroll calculation
+       * on the frame following the coordinates resets.
+       */
+
+      if (Tween._reactor.data.scrollTop) {
+        Tween._reactor.data.scrollTop -= 1;
+      }
+    });
+  }, Tween._resizeDelay);
 
   /**
    * @description Emitting a notification.
@@ -236,13 +290,21 @@ export abstract class Tween {
    * @memberof Tween
    */
 
-  private _getProxyState(element: HTMLElement, itemIndex: number): TweenState {
+  private _getProxyState(
+    itemId: string,
+    element: HTMLElement,
+    itemIndex: number
+  ): TweenState {
     // ⚠️ The state needs to be declared here in order to give a fresh object to each proxy
-    const state = JSON.parse(JSON.stringify(Tween._defaultState));
+    const state: TweenState = {
+      ...JSON.parse(JSON.stringify(Tween._defaultState)),
+      itemId,
+    };
 
     return new Proxy(state, {
       set: (target, prop, propValue, receiver) => {
         const oldClasses = [...target.classes];
+
         // isInView
         if (prop === 'isInView' && target.isInView !== propValue) {
           const eventName = propValue ? 'enter-view' : 'leave-view';
@@ -279,10 +341,14 @@ export abstract class Tween {
           );
 
           classesToRemove.forEach((className: string) => {
-            element.classList.remove(className);
+            fastdom.mutate(() => {
+              element.classList.remove(className);
+            });
           });
           classesToAdd.forEach((className: string) => {
-            element.classList.add(className);
+            fastdom.mutate(() => {
+              element.classList.add(className);
+            });
           });
         }
 
@@ -322,9 +388,8 @@ export abstract class Tween {
       itemIndex,
       inputOptions,
       options: processedOptions,
-      state: this._getProxyState(element, itemIndex),
+      state: this._getProxyState(itemId, element, itemIndex),
     };
-    Tween._list[itemId].state.itemId = itemId;
 
     return itemId;
   }
@@ -342,68 +407,6 @@ export abstract class Tween {
       this._flush(`${id}-${eventName}`);
     });
     delete Tween._list[id];
-  }
-
-  /**
-   * @description Handling tweens when window resizes.
-   * @author Alphability <albanmezino@gmail.com>
-   * @protected
-   * @returns {void}
-   * @memberof Tween
-   */
-
-  protected _handleResize(): void {
-    if (this._resizingMainHandler || !Tween._reactor) {
-      return;
-    }
-
-    this._resizingMainHandler = true;
-    const classes: string[][] = [];
-
-    // Read DOM
-    Object.values(Tween._list).forEach((item, index) => {
-      /**
-       * Resetting each prop.
-       * ⚠️ In order to reset a Proxy prop
-       * you need to go to the furthest nested level.
-       */
-      classes[index] = [...item.state.classes];
-      item.state.classes = Tween._defaultState.classes;
-      item.state.boundings = Tween._defaultState.boundings;
-      item.state.targetBoundings = Tween._defaultState.targetBoundings;
-      item.state.coordinates.x = Tween._defaultState.coordinates.x;
-      item.state.coordinates.y = Tween._defaultState.coordinates.y;
-      item.state.lerpDone = Tween._defaultState.lerpDone;
-      item.state.collant.parsedOffset =
-        Tween._defaultState.collant.parsedOffset;
-      item.state.collant.scrollOffset =
-        Tween._defaultState.collant.scrollOffset;
-      item.state.isInView = Tween._defaultState.isInView;
-      item.state.isInSpeedView = Tween._defaultState.isInSpeedView;
-      item.state.collantEvent = Tween._defaultState.collantEvent;
-    });
-
-    // Write DOM
-    Object.values(Tween._list).forEach((item, index) => {
-      classes[index].forEach((className) => {
-        fastdom.mutate(() => {
-          item.element.classList.remove(className);
-        });
-      });
-    });
-
-    raf(() => {
-      /**
-       * ⚠️ Force update elements' scroll calculation
-       * on the frame following the DOM resets.
-       */
-
-      if (Tween._reactor.data.scrollTop) {
-        Tween._reactor.data.scrollTop -= 1;
-      }
-
-      this._resizingMainHandler = false;
-    });
   }
 
   protected _destroy(): void {
