@@ -91,8 +91,6 @@ export class Detect extends Tween {
     }
 
     if (!this._triggerOffsetComputed) {
-      this._triggerOffsetComputed = true;
-
       tween.options.triggerOffsets = getTriggerOffset(
         tween,
         tween.state.boundings
@@ -128,12 +126,17 @@ export class Detect extends Tween {
     // Register scroll tick
     this._ticking = true;
 
-    const speedMeasurementPromises = Object.values(this._detectTweensList).map(
+    const detectMeasurementPromises = Object.values(this._detectTweensList).map(
       async (tween) => {
         await this._computeDetection(tween);
       }
     );
-    await Promise.all(speedMeasurementPromises);
+    await Promise.all(detectMeasurementPromises);
+
+    // Set trigger offset computation to true if all the elements' detection have been computed once.
+    if (!this._triggerOffsetComputed) {
+      this._triggerOffsetComputed = true;
+    }
 
     /**
      * Reset the tick so we can

@@ -110,8 +110,6 @@ export class Speed extends Tween {
     // If not once or not already in view.
     if (!tween.options.once || !tween.state.isInView) {
       if (!this._triggerOffsetComputed) {
-        this._triggerOffsetComputed = true;
-
         tween.options.triggerOffsets = getTriggerOffset(
           tween,
           tween.state.boundings
@@ -229,6 +227,11 @@ export class Speed extends Tween {
     });
 
     await Promise.all(speedMeasurementPromises);
+
+    // Set trigger offset computation to true if all the elements' detection have been computed once.
+    if (!this._triggerOffsetComputed) {
+      this._triggerOffsetComputed = true;
+    }
 
     this._lerpDone = !speedTweensArray.filter(({ state }) => !state.lerpDone)
       .length;

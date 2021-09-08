@@ -21,7 +21,7 @@ export class Alice {
    * @memberof Alice
    */
 
-  static _reactor: Calvin = new Calvin({ scrollTop: 0, isScrolling: false });
+  static _reactor: Calvin = new Calvin({ scrollTop: -1, isScrolling: false });
 
   /**
    * @description Object allowing to watch view data.
@@ -65,6 +65,13 @@ export class Alice {
    */
 
   private _refreshScroll = false;
+
+  /**
+   * @description Array of registered plugins names.
+   * @private
+   * @type {string[]}
+   * @memberof Alice
+   */
 
   private _optionsPluginsList: string[] = [];
 
