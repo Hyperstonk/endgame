@@ -50,20 +50,21 @@ export const applyTransform = (
   element: HTMLElement,
   { x, y }: TweenCoordinates
 ): void => {
+  let transformProp = 'transform';
+  let willChangeProp = 'transform';
+  if (!(transformProp in element.style) && 'msTransform' in element.style) {
+    transformProp = 'msTransform';
+    willChangeProp = '-ms-transform';
+  }
+
   const transformValue = `matrix3d(1,0,0.00,0,0.00,1,0.00,0,0,0,1,0,${x},${y},0,1)`;
 
-  element.style.willChange = 'transform';
-
-  // GSAP don't use the following two.
-  element.style.webkitTransform = transformValue;
+  element.style.willChange = willChangeProp;
   // @ts-ignore
-  element.style.msTransform = transformValue;
-
-  element.style.transform = transformValue;
+  element.style[transformProp] = transformValue;
 };
 
 export const clearTransform = (element: HTMLElement): void => {
-  element.style.removeProperty('webkitTransform');
   element.style.removeProperty('msTransform');
   element.style.removeProperty('transform');
 };

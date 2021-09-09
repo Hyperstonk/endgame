@@ -11,14 +11,15 @@ export interface TweenStateDefault {
   boundings: Boundings | null;
   targetBoundings: null;
   coordinates: TweenCoordinates;
+  triggerOffsetComputed: boolean;
+  isInView: boolean;
+  isInSpeedView: boolean;
   lerpDone: boolean;
+  collantEvent: string;
   collant: {
     parsedOffset: number;
     scrollOffset: number;
   };
-  isInView: boolean;
-  isInSpeedView: boolean;
-  collantEvent: string;
 }
 
 export interface TweenState extends TweenStateDefault {

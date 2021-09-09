@@ -50,8 +50,6 @@ export class Detect extends Tween {
 
   private _ticking = false;
 
-  private _triggerOffsetComputed = false;
-
   /**
    * Creates an instance of Detect.
    * @author Alphability <albanmezino@gmail.com>
@@ -90,7 +88,10 @@ export class Detect extends Tween {
       );
     }
 
-    if (!this._triggerOffsetComputed) {
+    if (!tween.state.triggerOffsetComputed) {
+      // Set trigger offset computation to true if the element's detection have been computed once.
+      tween.state.triggerOffsetComputed = true;
+
       tween.options.triggerOffsets = getTriggerOffset(
         tween,
         tween.state.boundings
@@ -133,22 +134,12 @@ export class Detect extends Tween {
     );
     await Promise.all(detectMeasurementPromises);
 
-    // Set trigger offset computation to true if all the elements' detection have been computed once.
-    if (!this._triggerOffsetComputed) {
-      this._triggerOffsetComputed = true;
-    }
-
     /**
      * Reset the tick so we can
      * capture the next scroll event
      */
     this._ticking = false;
   }, Detect._sixtyFpsToMs);
-
-  private _handleDetectResize(): void {
-    // Will recompute offsets
-    this._triggerOffsetComputed = false;
-  }
 
   /**
    * @description Initializing the detection abilities when the window object is defined.
@@ -176,9 +167,6 @@ export class Detect extends Tween {
           return;
         }
 
-        // Clear transforms before cleaning tweens
-        this._handleDetectResize();
-
         // Handling all tweens global reset during resize (debounced by using static method).
         Tween._handleResize();
       },
@@ -186,9 +174,6 @@ export class Detect extends Tween {
         if (!val) {
           return;
         }
-
-        // Clear transforms before cleaning tweens
-        this._handleDetectResize();
 
         // Handling all tweens global reset during resize (debounced by using static method).
         Tween._handleResize();
@@ -217,7 +202,7 @@ export class Detect extends Tween {
    * @returns {string}
    * @memberof Detect
    */
-  public add(element: HTMLElement, options: InputTweenOptions): string;
+  public add(element: HTMLElement, options?: InputTweenOptions): string;
 
   /**
    * @description Adding new tweens to the detection list.
@@ -228,11 +213,11 @@ export class Detect extends Tween {
    * @memberof Detect
    */
 
-  public add(elements: HTMLElement[], options: InputTweenOptions): string[];
+  public add(elements: HTMLElement[], options?: InputTweenOptions): string[];
 
   public add(
     elements: HTMLElement | HTMLElement[],
-    options: InputTweenOptions
+    options: InputTweenOptions = {}
   ): string | string[] {
     const ids = super._add(elements, options);
 
@@ -248,14 +233,34 @@ export class Detect extends Tween {
   /**
    * @description Allowing us to hook on a specific event.
    * @author Alphability <albanmezino@gmail.com>
-   * @param {...[eventName: string, ids: string[], func: AnyFunction]} args
+   * @param {string} eventName
+   * @param {string} id
+   * @param {AnyFunction} func
    * @returns {Detect}
    * @memberof Detect
    */
+
+  public on(eventName: string, id: string, func: AnyFunction): Detect;
+
+  /**
+   * @description Allowing us to hook on a specific event.
+   * @author Alphability <albanmezino@gmail.com>
+   * @param {string} eventName
+   * @param {string[]} ids
+   * @param {AnyFunction} func
+   * @returns {Detect}
+   * @memberof Detect
+   */
+
+  public on(eventName: string, ids: string[], func: AnyFunction): Detect;
+
   public on(
-    ...args: [eventName: string, ids: string[], func: AnyFunction]
+    eventName: string,
+    ids: string | string[],
+    func: AnyFunction
   ): Detect {
-    super._on(...args);
+    const idsList = Array.isArray(ids) ? ids : [ids];
+    super._on(eventName, idsList, func);
 
     return this;
   }

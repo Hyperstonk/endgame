@@ -60,8 +60,6 @@ export class Speed extends Tween {
 
   private _ticking = false;
 
-  private _triggerOffsetComputed = false;
-
   /**
    * @description Ensuring that we'll complete lerp transformations even if the user is not scrolling anymore.
    * @private
@@ -109,7 +107,10 @@ export class Speed extends Tween {
 
     // If not once or not already in view.
     if (!tween.options.once || !tween.state.isInView) {
-      if (!this._triggerOffsetComputed) {
+      if (!tween.state.triggerOffsetComputed) {
+        // Set trigger offset computation to true if the element's detection have been computed once.
+        tween.state.triggerOffsetComputed = true;
+
         tween.options.triggerOffsets = getTriggerOffset(
           tween,
           tween.state.boundings
@@ -228,11 +229,6 @@ export class Speed extends Tween {
 
     await Promise.all(speedMeasurementPromises);
 
-    // Set trigger offset computation to true if all the elements' detection have been computed once.
-    if (!this._triggerOffsetComputed) {
-      this._triggerOffsetComputed = true;
-    }
-
     this._lerpDone = !speedTweensArray.filter(({ state }) => !state.lerpDone)
       .length;
 
@@ -254,9 +250,6 @@ export class Speed extends Tween {
   }, Speed._sixtyFpsToMs);
 
   private _handleSpeedResize(): void {
-    // Will recompute offsets
-    this._triggerOffsetComputed = false;
-
     /**
      * ⚡ Avoid memory leak
      * Early return if there is no items to detect.
@@ -334,7 +327,7 @@ export class Speed extends Tween {
    * @memberof Speed
    */
 
-  public add(element: HTMLElement, options: InputTweenOptions): string;
+  public add(element: HTMLElement, options?: InputTweenOptions): string;
 
   /**
    * @description Adding new tweens to the detection list.
@@ -345,11 +338,11 @@ export class Speed extends Tween {
    * @memberof Speed
    */
 
-  public add(elements: HTMLElement[], options: InputTweenOptions): string[];
+  public add(elements: HTMLElement[], options?: InputTweenOptions): string[];
 
   public add(
     elements: HTMLElement | HTMLElement[],
-    options: InputTweenOptions
+    options: InputTweenOptions = {}
   ): string | string[] {
     const ids = super._add(elements, options);
 
@@ -365,14 +358,34 @@ export class Speed extends Tween {
   /**
    * @description Allowing us to hook on a specific event.
    * @author Alphability <albanmezino@gmail.com>
-   * @param {...[eventName: string, ids: string[], func: AnyFunction]} args
+   * @param {string} eventName
+   * @param {string} id
+   * @param {AnyFunction} func
    * @returns {Speed}
    * @memberof Speed
    */
+
+  public on(eventName: string, id: string, func: AnyFunction): Speed;
+
+  /**
+   * @description Allowing us to hook on a specific event.
+   * @author Alphability <albanmezino@gmail.com>
+   * @param {string} eventName
+   * @param {string[]} ids
+   * @param {AnyFunction} func
+   * @returns {Speed}
+   * @memberof Speed
+   */
+
+  public on(eventName: string, ids: string[], func: AnyFunction): Speed;
+
   public on(
-    ...args: [eventName: string, ids: string[], func: AnyFunction]
+    eventName: string,
+    ids: string | string[],
+    func: AnyFunction
   ): Speed {
-    super._on(...args);
+    const idsList = Array.isArray(ids) ? ids : [ids];
+    super._on(eventName, idsList, func);
 
     return this;
   }

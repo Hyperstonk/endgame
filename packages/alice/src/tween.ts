@@ -112,16 +112,17 @@ export abstract class Tween {
       x: 0,
       y: 0,
     },
-    lerpDone: true,
-    collant: {
-      parsedOffset: 0,
-      scrollOffset: 0,
-    },
+    triggerOffsetComputed: false,
     // In view considering triggerOffset
     isInView: false,
     // In view not considering triggerOffset for speed computations
     isInSpeedView: false,
+    lerpDone: true,
     collantEvent: '',
+    collant: {
+      parsedOffset: 0,
+      scrollOffset: 0,
+    },
   };
 
   /**
@@ -160,7 +161,11 @@ export abstract class Tween {
       item.state.coordinates.x = Tween._defaultState.coordinates.x;
       item.state.coordinates.y = Tween._defaultState.coordinates.y;
 
-      // Reset lerp since the transforms have been cleared
+      // Allowing the tween to recompute offsets
+      item.state.triggerOffsetComputed =
+        Tween._defaultState.triggerOffsetComputed;
+
+      // Reset lerp since the transforms have been cleared right before
       item.state.lerpDone = Tween._defaultState.lerpDone;
 
       // NOTE: In view are computed during the scroll. The resize handler force a scroll update at the end of the function. So, no need to reset inview values.
