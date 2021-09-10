@@ -36,19 +36,34 @@ export const getTriggerOffset = (
   { inputOptions: { triggerOffset } }: TweenObject,
   boundings: Boundings
 ): TriggerOffsets => {
-  const inputOffset = !Array.isArray(triggerOffset)
-    ? [triggerOffset, triggerOffset]
-    : triggerOffset;
+  const defaultValues: TriggerOffsets = [0, 0];
 
-  const {
-    top: triggerOffsetTop,
-    bottom: triggerOffsetBottom,
-  } = inputOffset.reduce(
-    (acc, offset, index) => {
-      let parsedOffset = 0;
-      const key = index === 0 ? 'top' : 'bottom';
+  if (!triggerOffset) {
+    return defaultValues;
+  }
 
-      try {
+  let inputOffset = [triggerOffset, triggerOffset];
+
+  try {
+    if (Array.isArray(triggerOffset)) {
+      // Throw if more than two values.
+      if (triggerOffset.length !== 2) {
+        throw new Error(
+          'One of your triggerOffset option contains an array with less or more than two values.'
+        );
+      }
+
+      inputOffset = triggerOffset;
+    }
+
+    const {
+      top: triggerOffsetTop,
+      bottom: triggerOffsetBottom,
+    } = inputOffset.reduce(
+      (acc, offset, index) => {
+        let parsedOffset = 0;
+        const key = index === 0 ? 'top' : 'bottom';
+
         if (typeof offset === 'number' && !isNaN(offset)) {
           parsedOffset = offset;
         } else if (
@@ -65,18 +80,20 @@ export const getTriggerOffset = (
             parseInt(offset.replace('%', ''), 10) * (boundings.height / 100);
         } else {
           throw new Error(
-            'There is a problem with the syntax of one of your triggerOffset option.'
+            `There is a problem with the syntax of one of your triggerOffset option: ${triggerOffset}`
           );
         }
-      } catch (error) {
-        console.error(error);
-      }
-      return { ...acc, [key]: parsedOffset };
-    },
-    { top: 0, bottom: 0 }
-  );
+        return { ...acc, [key]: parsedOffset };
+      },
+      { top: 0, bottom: 0 }
+    );
 
-  return [triggerOffsetTop, triggerOffsetBottom];
+    return [triggerOffsetTop, triggerOffsetBottom];
+  } catch (error) {
+    console.error(error);
+  }
+
+  return defaultValues;
 };
 
 export const isInView = (
