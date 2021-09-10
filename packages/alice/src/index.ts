@@ -252,6 +252,23 @@ export class Alice {
   }
 
   /**
+   * @description Update tweens positions and specific features.
+   * @author Alphability <albanmezino@gmail.com>
+   * @returns {void}
+   * @memberof Alice
+   */
+
+  public update(): void {
+    // We can't boot scroll values if Alice has not been initialized.
+    if (!this._isInitialized) {
+      return;
+    }
+
+    Alice._detect.update();
+    Alice._speed.update();
+  }
+
+  /**
    * @description Reactive scroll properties object's getter.
    * @readonly
    * @type {Calvin}

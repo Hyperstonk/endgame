@@ -45,16 +45,31 @@ export const getTriggerOffset = (
     bottom: triggerOffsetBottom,
   } = inputOffset.reduce(
     (acc, offset, index) => {
-      let parsedOffset = null;
+      let parsedOffset = 0;
       const key = index === 0 ? 'top' : 'bottom';
-      if (typeof offset === 'number' && !isNaN(offset)) {
-        parsedOffset = offset;
-      } else if (typeof offset === 'string' && offset.endsWith('vh')) {
-        parsedOffset =
-          parseFloat(offset.replace('vh', '')) * (window.innerHeight / 100);
-      } else if (typeof offset === 'string' && offset.endsWith('%')) {
-        parsedOffset =
-          parseInt(offset.replace('%', ''), 10) * (boundings.height / 100);
+
+      try {
+        if (typeof offset === 'number' && !isNaN(offset)) {
+          parsedOffset = offset;
+        } else if (
+          typeof offset === 'string' &&
+          offset.match(/^[0-9]{1,}vh$/g)
+        ) {
+          parsedOffset =
+            parseFloat(offset.replace('vh', '')) * (window.innerHeight / 100);
+        } else if (
+          typeof offset === 'string' &&
+          offset.match(/^[0-9]{1,}%$/g)
+        ) {
+          parsedOffset =
+            parseInt(offset.replace('%', ''), 10) * (boundings.height / 100);
+        } else {
+          throw new Error(
+            'There is a problem with the syntax of one of your triggerOffset option.'
+          );
+        }
+      } catch (error) {
+        console.error(error);
       }
       return { ...acc, [key]: parsedOffset };
     },

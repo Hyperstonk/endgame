@@ -167,18 +167,29 @@ export class Detect extends Tween {
           return;
         }
 
-        // Handling all tweens global reset during resize (debounced by using static method).
-        Tween._handleResize();
+        // Update tweens positions and specific features.
+        this.update();
       },
       outerHeight: (val: number) => {
         if (!val) {
           return;
         }
 
-        // Handling all tweens global reset during resize (debounced by using static method).
-        Tween._handleResize();
+        // Update tweens positions and specific features.
+        this.update();
       },
     });
+  }
+
+  /**
+   * @description Update tweens positions and specific features.
+   * @author Alphability <albanmezino@gmail.com>
+   * @memberof Detect
+   */
+
+  public update(): void {
+    // Handling all tweens global reset during resize (debounced by using static method).
+    Tween._handleResize();
   }
 
   /**
