@@ -120,15 +120,13 @@ export class Speed extends Tween {
       const { triggerOffsets } = tween.options;
 
       // Computing in view detection for each tween.
-      if (tween.options.addClass) {
-        tween.state.isInView = isInView(
-          Speed._reactor.data.scrollTop,
-          windowHeight,
-          triggerOffsets,
-          boundings,
-          coordinates
-        );
-      }
+      tween.state.isInView = isInView(
+        Speed._reactor.data.scrollTop,
+        windowHeight,
+        triggerOffsets,
+        boundings,
+        coordinates
+      );
     }
 
     // Computing in view detection for speed computations.

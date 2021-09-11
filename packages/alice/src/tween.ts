@@ -296,8 +296,9 @@ export abstract class Tween {
    */
 
   private _getProxyState(
-    itemId: string,
     element: HTMLElement,
+    options: TweenOptions,
+    itemId: string,
     itemIndex: number
   ): TweenState {
     // ⚠️ The state needs to be declared here in order to give a fresh object to each proxy
@@ -318,10 +319,12 @@ export abstract class Tween {
             itemIndex,
           });
 
-          if (propValue) {
-            target.classes.push('--in-view');
-          } else {
-            removeStringFromArray('--in-view', target.classes);
+          if (options.addClass) {
+            if (propValue) {
+              target.classes.push('--in-view');
+            } else {
+              removeStringFromArray('--in-view', target.classes);
+            }
           }
         }
 
@@ -393,7 +396,7 @@ export abstract class Tween {
       itemIndex,
       inputOptions,
       options: processedOptions,
-      state: this._getProxyState(itemId, element, itemIndex),
+      state: this._getProxyState(element, processedOptions, itemId, itemIndex),
     };
 
     return itemId;
