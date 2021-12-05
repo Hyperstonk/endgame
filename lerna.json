@@ -2,9 +2,7 @@
   "version": "1.0.7",
   "npmClient": "yarn",
   "useWorkspaces": true,
-  "packages": [
-    "packages/*"
-  ],
+  "packages": ["packages/*"],
   "command": {
     "publish": {
       "verifyAccess": false,
@@ -15,6 +13,7 @@
         "**/*.md",
         "*.md",
         "**/__tests__/**",
+        "**/doc/**",
         ".editorconfig",
         ".eslintrc.js",
         ".gitignore",

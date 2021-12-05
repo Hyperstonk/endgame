@@ -2,7 +2,7 @@
 
 > ALICE: Another Library Implementing Captivating Effects
 
-## ALICE will help you
+## ALICE will help you:
 
 👂 Listen to the window's scroll event.
 
@@ -16,15 +16,11 @@
 
 ## Table of contents
 
-👉 [The installation](#the-installation)
+## 🚨 Disclamer
 
-👉 [The initialization](#the-initialization)
+Under the hood ALICE is using [CALVIN](https://github.com/MBDW-Studio/endgame/tree/main/packages/calvin) and [EVA](https://github.com/MBDW-Studio/endgame/tree/main/packages/eva).
 
-👉 [The scroll](#the-scroll)
-
-👉 [The watched elements](#the-watched-elements)
-
-👉 [The options](#the-dark-magic)
+If you're not familiar with these two packages we recommend you to check them out. A lot of the following sections will be based on their features.
 
 ## The installation
 
@@ -63,7 +59,7 @@ window.$endgame = {
 import { Alice } from '@endgame/alice';
 
 /**
- * If you're using Nuxt I recommend you
+ * If you're using Nuxt we recommend you
  * to do that in a plugin 🚀
  */
 ... global-plugin.js
@@ -74,7 +70,7 @@ const initializeEndgame = (_context, inject) => {
 };
 ...
 
-... YourComponent.vue
+... SomeVueComponent.vue
 mounted() {
   /**
    * ALICE will be at your disposal at:
@@ -84,19 +80,26 @@ mounted() {
 ...
 ```
 
-## The Scroll
+## The basics
+
+Four basic methods will help you handle ALICE basic features lifecycle.
+
+- initialize: Initialize all ALICE's features.
+- bootScrollValues: Boot scroll event initial values (handy when changing page).
+- update: Trigger a complete ALICE update.
+- destroy: Destroy ALICE instance.
 
 ### The _initialize_ method
 
-With this function you'll:
+This is the first function to call. With this function you'll start ALICE. During the initialization, the function will:
 
-👉 Initialize [@endgame/eva](https://github.com/MBDW-Studio/endgame/tree/main/packages/eva)
+👉 Initialize [@endgame/eva](https://github.com/MBDW-Studio/endgame/tree/main/packages/eva).
 
 👉 Initialize the window's scroll event listener.
 
-👉 Initialize the plugins (detect and speed) to access features like listening to properties with the [_on function_](#the-on-method)
+👉 Initialize the plugins (detect and speed) to access features like listening to properties with the [_on function_](#the-on-method).
 
-👉 Use the [@endgame/eva](https://github.com/MBDW-Studio/endgame/tree/main/packages/eva)'s resize event listener to handle the [_watched elements_](#the-watched-elements).
+👉 Use the [@endgame/eva](https://github.com/MBDW-Studio/endgame/tree/main/packages/eva)'s resize event listener to handle the [_tweens_](#the-tweens) when resizing the page.
 
 #### 🥚 Vanilla
 
@@ -108,7 +111,7 @@ window.$endgame.alice.initialize();
 #### 🍳 Nuxt
 
 ```js
-... YourVueComponent.vue
+... SomeVueComponent.vue
 
 beforeMount() {
   // 🚀 For Nuxt: preferably in layout/default.vue
@@ -120,22 +123,28 @@ beforeMount() {
 
 ### The _bootScrollValues_ method
 
-With this function you'll initialize the scroll values. Distinguishing this from the _initialize_ method is pretty useful since you'll be able to initialize the scroll values when you're sure that the elements in the window are in place.
+With this function you'll initialize the scroll values. Distinguishing this from the `initialize` method is pretty useful since you'll be able to initialize the scroll values when you're sure that the elements in the window are in place.
+
+This method will come in handy when changing page (if your app/website uses the History API).
+
+> 🚨 This function will only work if you previously used the [_initialize_ method](#the-initialize-method).
 
 #### 🥚 Vanilla
 
 ```js
-// After using the initialize method
+// Boot the scroll values in order lay the groundwork
+// for your tweens (this part will come later).
 window.$endgame.alice.bootScrollValues();
 ```
 
 #### 🍳 Nuxt
 
 ```js
-... YourVueComponent.vue
+... SomeVueComponent.vue
 
 mounted() {
-  // After using the initialize method
+  // Boot the scroll values in order lay the groundwork
+  // for your tweens (this part will come later).
   this.$endgame.alice.bootScrollValues();
 },
 
@@ -144,15 +153,17 @@ mounted() {
 
 ### The _update_ method
 
-With the update function you'll be able to force update the context.
+With the update function you'll be able to force update ALICE's global context.
 
-By context I mean:
+By context we mean:
 
-👉 Re-compute the [_scrollDistanceFromTop_](#the-initializeScroll-function)
+👉 Re-compute the total distance scrolled (see [_scrollTop_](#scrollTop)).
 
-👉 Re-compute the [_watched elements_](#the-watched-elements) positions.
+👉 Re-compute the [_tweens_](#the-tweens) positions.
 
-👉 Re-compute the [_watched elements_](#the-watched-elements) effects (like _parallax_, _lerp_, _collant_, etc).
+👉 Re-compute the [_tweens_](#the-tweens) effects (like _detection_, _parallax_, _lerp_, etc.).
+
+> 🚨 This function will only work if you previously used the [_initialize_ method](#the-initialize-method).
 
 #### 🥚 Vanilla
 
@@ -163,329 +174,306 @@ window.$endgame.alice.update();
 #### 🍳 Vue.js
 
 ```js
-... YourVueComponent.vue
+... SomeVueComponent.vue
 
 mounted(){
-    this.$endgame.alice.update();
+  this.$endgame.alice.update();
 },
 
 ...
 ```
 
-### The _destroyScroll_ method
+### The _destroy_ method
 
-The _destroyScroll_ method will remove all [_watched elements_](#the-watched-elements) and their listeners. Then it will remove the scroll object instance and all its listeners.
+The `destroy` method will remove all [_tweens_](#the-tweens) and their logic. Then it will remove the scroll object instance and all its listeners. Finally, it will destroy the [EVA](https://github.com/MBDW-Studio/endgame/tree/main/packages/eva) instance used under the hood.
 
 Everything will be ready for garbage collection 👌
+
+> 🚨 This function will only work if you previously used the [_initialize_ method](#the-initialize-method).
 
 #### 🥚 Vanilla
 
 ```js
-window.$endgame.alice.destroyScroll();
+window.$endgame.alice.destroy();
 ```
 
 #### 🍳 Vue.js
 
 ```js
-... YourVueComponent.vue
+... SomeVueComponent.vue
 
 beforeDestroy(){
-    this.$endgame.alice.destroyScroll();
+  this.$endgame.alice.destroy();
 },
 
 ...
 ```
 
-## The watched elements
+## Keep this simple
 
-Here's the real magic !
+To keep this documentation concise, we'll use `$endgame` as the global variable containing the `alice` instance in your project.
 
-Counting scroll pixels is quite nice... but between us that's for amateurs 💅
+No more vanilla js vs Vue stuff. Only `$endgame`.
 
-We'll now learn how to watch elements and make awesome things with them 🔥
-
-### The basics 👌
-
-Firstly, you need to learn the basics, i.e. _watch_ and _forget_ an element.
-
-#### _Watch_ function and _forget_ method
-
-Watching an element will unleash a ton of awesome dark magic spells... that you're not ready to learn for now.
-
-##### 🎁 Return value
-
-The _watch_ function returns an instance of _WatchedElement_.
-
-> 🚨 **Nota bene**  
-> By watching an element you will set default behaviors like:
->
-> 👉 Auto toggling an _is-in-view_ class on the element when it enters the viewport.
->
-> 👉 Dispatching two events: _enter-view_ and _leave-view_ accessible from the _WatchedElement_ instance.
-
-We'll start with the simple stuff.
-To do simple magic you only need one thing:
-
-👉 An HTML element
-
-##### 🥚 Vanilla
+### Example
 
 ```js
-import { query } from '@endgame/clara';
-
-// 🚨 Do not forget to init ALICE! (See the sections above)
-
-// element is my HTML element
-const [element] = query({ selector: '#my-id' });
-
-// Watch an element
-const myWatcher = window.$endgame.alice.watch({ element });
-
-// Forget the element
-myWatcher.forget();
+/**
+ * Depending on your project we'll use the following as an alias for:
+ * - window.$endgame.alice.initialize()
+ * - this.$endgame.alice.initialize()
+ */
+$endgame.alice.initialize();
 ```
 
-> See: [_query_](https://gitlab.com/Alphability/endgame/-/tree/master/packages/clara#query) to learn more about this useful function
+## Global architecture
 
-##### 🍳 Vue.js
+To ease your experience with the package, ALICE exposes specific objects as a way to split her features into groups.
 
-```js
-... YourVueComponent.vue
+- `scroll`
+- `view`
+- `detect`
+- `speed`
 
-<template>
-    <div class="section">
-        <span ref="item" class="item">I'm a span</span>
-    </div>
-</template>
+### Scroll
 
-<script>
-export default {
-    data: () => ({
-        myWatcher: null
-    }),
-    mounted() {
-        // Watch an element
-        this.myWatcher = this.$endgame.alice.watch({ element: this.$refs.item });
-    },
-    beforeDestroy() {
-        // Forget the watcher to avoid memory leak
-        if (this.myWatcher) this.myWatcher.forget();
-    }
-};
-</script>
+After initializing ALICE you'll be able to play with the page scroll. ALICE keeps performances at heart and will declare only one scroll listener for all her features.
 
-...
-```
+You'll find every scroll event related stuff at `$endgame.alice.scroll`.
 
-#### The _watchMultiple_ function and _forgetMultiple_ method
+The scroll object is a CALVIN instance. So, you'll be able to use the `computed`, `watch` and `unwatch` methods (see [CALVIN](https://github.com/MBDW-Studio/endgame/tree/main/packages/calvin)).
 
-This function will simply help you watch multiple elements at the same time.
+By default you can access two values: `scrollTop` and `isScrolling`.
 
-##### 🥚 Vanilla
+#### scrollTop
 
 ```js
-// We'll say that elements is my array of HTML elements
+// Logging the current scroll distance from the top of the page.
+console.log($endgame.alice.scroll.data.scrollTop);
 
-// Watch multiple elements
-const myWatchers = window.$endgame.alice.watchMultiple({ elements });
-
-// Forget multiple watchers
-window.$endgame.alice.forgetMultiple(myWatchers);
-```
-
-##### 🍳 Vue.js
-
-```js
-... YourVueComponent.vue
-
-<template>
-    <ul class="section">
-        <li ref="items" v-for="index in 5">
-            <span>{ `I'm span number ${index}` }</span>
-        </li>
-    </ul>
-</template>
-
-<script>
-export default {
-    data: () => ({
-        myWatcher: []
-    }),
-    mounted() {
-        // Watch multiple elements
-        this.myWatchers = this.$endgame.alice.watchMultiple({ elements: this.$refs.items });
-    },
-    beforeDestroy() {
-        // Forget the watchers to avoid memory leak
-        if (this.myWatchers.length) this.$endgame.alice.forgetMultiple(this.myWatchers);
-    }
-};
-</script>
-
-...
-```
-
-#### The _on_ method
-
-The on method will allow you to listen to the specific events below 👇
-
-##### The _enter-view_ and _leave-view_ events
-
-###### 🥚 Vanilla
-
-```js
-// We'll say that element is my HTML element
-
-// Watch an element
-const myWatcher = window.$endgame.alice
-  .watch({ element })
-  .on('enter-view', () => {
-    console.log('Is in view');
-  })
-  .on('leave-view', () => {
-    console.log("Isn't in view");
-  });
-```
-
-###### 🍳 Vue.js
-
-```js
-... YourVueComponent.vue
-// We'll say that this.$refs.item is my HTML element
-
-mounted() {
-    // Watch an element
-    this.myWatcher = this.$endgame.alice
-    .watch({ element: this.$refs.item })
-    .on('enter-view', () => {
-        console.log('Is in view');
-    })
-    .on('leave-view', () => {
-        console.log("Isn't in view");
-    });
-},
-
-...
-```
-
-##### The _before-enter-collant_, _enter-collant_ and _leave-collant_ events
-
-###### 🥚 Vanilla
-
-```js
-// We'll say that element is my HTML collant element and sidebar is the container in which the collant will evolve
-
-// Watch an element
-const myCollant = window.$endgame.alice
-  .watch({
-    element,
-    options: {
-      collant: true,
-      collantOffset: 100,
-      target: sidebar,
-      position: 'top',
-    },
-  })
-  .on('before-enter-collant', () => {
-    console.log("The element isn't collant.");
-  })
-  .on('enter-collant', () => {
-    console.log('The element is collant.');
-  })
-  .on('leave-collant', () => {
-    console.log('The element was collant.');
-  });
-```
-
-###### 🍳 Vue.js
-
-```js
-... YourVueComponent.vue
-// We'll say that this.$refs.item is my HTML element
-
-mounted() {
-    // Watch an element
-    this.myCollant = this.$endgame.alice
-    .watch({
-        element: this.$refs.item,
-        options: {
-            collant: true,
-            collantOffset: 100,
-            target: sidebar,
-            position: 'top',
-        },
-    })
-    .on('before-enter-collant', () => {
-        console.log("The element isn't collant.");
-    })
-    .on('enter-collant', () => {
-        console.log('The element is collant.');
-    })
-    .on('leave-collant', () => {
-        console.log('The element was collant.');
-    });
-},
-
-...
-```
-
-## The dark magic
-
-For this part the examples will only be in vanilla Javascript since the changes will only concern the _watch_ function (and _watchMultiple_ function, which will take the same _options_ object into account).
-
-So like I said, you'll need to pass an additional _options_ object to your _watch_ function.
-
-**Example:**
-
-```js
-const watched = window.$endgame.alice.watch({
-  element,
-  options: {
-    // Here goes your options
+$endgame.alice.scroll.watch({
+  scrollTop: (scrolledDistance) => {
+    // Logging the scrolled distance everytime scrollTop gets updated
+    console.log(scrolledDistance);
   },
 });
 ```
 
-## The options in context 🧰
+#### isScrolling
 
-There is some options that you can apply to your watched element. Instead of listing all of them, we'll see them depending on what you want to achieve.
+```js
+// Logging the current scroll event state.
+console.log($endgame.alice.scroll.data.isScrolling);
 
-### Element detection 🔍
+$endgame.alice.scroll.watch({
+  isScrolling: (weAreScrolling) => {
+    // Logging 'nope' everytime the user stops scrolling
+    if (!weAreScrolling) {
+      console.log('nope');
+    }
+  },
+});
+```
 
-In this context the following parameters will be taken into account:
+### View
 
-👉 stalk
+ALICE uses EVA to easily access viewport values (like the window width). Since ALICE uses EVA anyways, we thought that it would be great to expose her through ALICE.
+
+So, after initializing ALICE you'll be able to easily play with the window values without declaring an EVA instance yourself.
+
+You'll find every viewport related stuff at `$endgame.alice.view`.
+
+The view object is an EVA instance, which is using CALVIN under the hood. So, you'll be able to use the `computed`, `watch` and `unwatch` methods (see [EVA](https://github.com/MBDW-Studio/endgame/tree/main/packages/eva) and [CALVIN](https://github.com/MBDW-Studio/endgame/tree/main/packages/calvin)).
+
+By default you can access four different values: `width`, `height`, `outerWidth` and `outerHeight`.
+
+See [EVA](https://github.com/MBDW-Studio/endgame/tree/main/packages/eva) to learn more about what she can do for you.
+
+### Detect
+
+The detect object will enable you to detect HTML elements with ease. These detected elements will be reffered as _tweens_ later on.
+
+You'll find this object at `$endgame.alice.detect`.
+
+- You'll be able to add and remove detected elements easily.
+- Listen to specific events.
+- etc.
+
+### Speed
+
+The speed object will enable you to detect HTML elements with ease. These detected elements will be reffered as _tweens_ later on.
+
+You'll find this object at `$endgame.alice.speed`.
+
+- You'll be able to add and remove speed elements easily.
+- Listen to specific events.
+- etc.
+
+## The tweens
+
+Here's the real magic !
+
+Counting scrolled pixels is quite nice... but between us that's for amateurs 💅
+
+We'll now learn how to watch elements and make awesome things with them 🔥
+
+Firstly, you need to learn the basics, i.e. `add` and `remove` HTML elements.
+
+### The _add_ function and _remove_ method
+
+Tweening an element will unleash a ton of awesome dark magic spells... that you're not ready to learn for now.
+
+We'll start with the simple stuff.
+To do simple magic you only need one thing:
+
+👉 An HTML element or a list of HTML elements.
+
+Keep in mind that the `add` function returns a single tween id or a list of tween ids.
+
+```js
+// 🚨 Do not forget to init ALICE! (See the sections above)
+
+// NOTE: detect on speed objects work the same way.
+
+// ⚡ Starting with one HTML element
+// element is our HTML element.
+const element = document.getElementById('my-element-id');
+
+// Add the element to the detect tween list.
+const id = $endgame.alice.detect.add(element);
+
+// Remove the HTML element from the tween list.
+$endgame.alice.detect.remove(id);
+
+// ⚡ We can do the same with multiple HTML elements.
+// elements is our list of HTML elements.
+const elements = document.getElementsByClassName('elements-class-name');
+
+// Add the elements to the speed tween list.
+const ids = $endgame.alice.speed.add(element);
+
+// Remove the HTML elements from the tween list.
+$endgame.alice.speed.remove(ids);
+
+/**
+ * 😍 Since we removed all the elements from their tween lists,
+ * your tweens are ready for garbage collection.
+ */
+```
+
+> 🚨 **Nota bene**  
+> By adding HTML elements you'll enable default behaviors for your tweens like:
+>
+> 👉 Auto toggling an **_--in-view_** class on the elements when they enter the viewport.
+>
+> 👉 Dispatching two events: **_enter-view_** and **_leave-view_** accessible from the **_detect_** and **_speed_** objects.
+
+### The _on_ method
+
+The `on` method will allow you to listen to the specific events below.
+
+#### The _enter-view_ and _leave-view_ events
+
+```js
+// 🚨 We'll say that element is my HTML element
+
+// Add the element to the detect tween list.
+const id = $endgame.alice.detect.add(element);
+
+// ⚡ You can chain the on methods
+$endgame.alice.detect
+  .on('enter-view', id, () => {
+    console.log('Is in view');
+  })
+  .on('leave-view', id, () => {
+    console.log("Isn't in view");
+  });
+```
+
+## 🔮 The dark magic
+
+To really get to the good stuff, you'll need to pass an additional _options_ object to your `add` function.
+
+```js
+const id = $endgame.alice.detect.watch(htmlElement, {
+  // Here goes your options
+});
+```
+
+> 🧰 The options in context
+>
+> There is some options that you can apply to your watched element. Instead of listing all of them, we'll see them depending on what you want to achieve.
+
+### 🔍 Elements detection
+
+To detect HTML elements you'll need to use the `$endgame.alice.detect` object.
+
+In this context the following options will be taken into account:
+
+👉 addClass
+
+👉 once
 
 👉 triggerOffset
 
-#### ⚙️ The _stalk_ property
+#### ⚙️ The _addClass_ option
 
-Type: `Boolean`
+Type: `boolean`
 
 Default value: `true`
 
 ##### 📝 Description
 
+By default an `--in-view` class will be added to your HTML elements as they enter in the viewport. The class is automatically removed when they leave it.
+
+By setting `addClass` to `false`, this feature will be disabled for all the tweens added by the `add` function.
+
+```js
+// Example
+const ids = $endgame.alice.detect.watch(htmlElements, {
+  addClass: false,
+});
+```
+
+#### ⚙️ The _once_ option
+
+Type: `boolean`
+
+Default value: `false`
+
+##### 📝 Description
+
 Decide whether or not watching the element entrance multiple times. By default any in/out-view state change will be recorded.
 
-By setting `stalk` to `false`, only the first in-view state will be recorded. No following change will  
+By setting `once` to `true`, only the first in-view state will be recorded. No following change will  
 take effect.
 
-#### ⚙️ The _triggerOffset_ property
+```js
+// Example
+const ids = $endgame.alice.detect.watch(htmlElements, {
+  once: true,
+});
+```
 
-Type: `Integer` or `String`
+#### ⚙️ The _triggerOffset_ option
+
+Type: `number` or `string` or `[number|string, number|string]`
 
 Default value: `0`
 
 ##### 📝 Description
 
-By default your watched element will be detected when one of those two conditions is met:
+By default your HTML element will be detected when one of those two conditions is met:
 
 👉 The bottom of the window reaches the top of the element.
 
 👉 The top of the window reaches the bottom of the element.
 
-The `triggerOffset` parameter will only shift the top and bottom boundaries towards the center of your element.
+The `triggerOffset` parameter will only shift the top and bottom boundaries.
+
+With positive values the boundaries will shift towards the center of your HTML element.
+
+With negative values the boundaries will shift away from the center of your HTML element.
 
 ##### Examples
 
@@ -495,7 +483,26 @@ A `triggerOffset` set to `'10%'` will shift the top and bottom boundaries of you
 
 ![alt text](./doc/images/trigger-offset.png 'Trigger offset schema')
 
-### Apply speed 🚀
+```js
+// Example of allowed values
+
+// The first value of an array of offsets is used as the element's top offset
+// The second value of an array of offsets is used as the element's bottom offset
+const ids = $endgame.alice.detect.watch(htmlElements, {
+  // You can use numbers and strings containing 'vh' or '%'
+  // triggerOffset: 10,
+  // triggerOffset: [10, 10],
+  // triggerOffset: '-20vh',
+  // triggerOffset: '14%',
+  // triggerOffset: ['10vh', '-10%'],
+});
+```
+
+### 🚀 Apply speed
+
+> 🚨 The previous features shown in the [detect section](#🔍-elements-detection) are also available with the speed tweens.
+
+To add speed to HTML elements you'll need to use the `$endgame.alice.speed` object.
 
 In this context the following parameters will be taken into account:
 
@@ -503,13 +510,9 @@ In this context the following parameters will be taken into account:
 
 👉 lerp
 
-👉 position
-
-👉 target
-
 #### ⚙️ The _speed_ property
 
-Type: `Number`
+Type: `number`
 
 Default value: `0`
 
@@ -525,137 +528,42 @@ Any element with a **positive speed** will **disappear faster than a classic ele
 
 Any element with a **negative speed** will **fight against the current** and disappear slower than any classic element.
 
+```js
+// Example
+const ids = $endgame.alice.speed.watch(htmlElements, {
+  speed: 0.9,
+  // speed: -2,
+  // speed: -0.756,
+  // speed: 4.2,
+  // Play with the values to find the best for your elements
+});
+```
+
 #### ⚙️ The _lerp_ property
 
-Type: `Float` ∈ [0,1]
+Type: `number` ∈ [0,1]
 
-Default value: `null`
+Default value: `1`
 
 ##### 📝 Description
 
-In mathematics, lerp (linear interpolation) is a method of curve fitting using linear polynomials to construct new data points within the range of a discrete set of known data points.
+In mathematics, [lerp (linear interpolation)](https://en.wikipedia.org/wiki/Linear_interpolation) is a method of curve fitting using linear polynomials to construct new data points within the range of a discrete set of known data points.
 
 **In our case, the simplest translation would be this schema**.
 ![alt text](./doc/images/lerp.png 'Linear interpolation schema')
 
 By setting a lerp value, at each frame, the normal translation value (coming from the speed property) will be lerped.
 
-The (x0, y0) point would be the element current position. The (x1, y1) point would be the new element's position with a speed property applied to it. The effective position will be the (x,y) point.
+The `(x0, y0)` point would be the element current position. The `(x1, y1)` point would be the new element's position with a speed property applied to it. The effective position will be the `(x,y)` point.
 
 By changing the lerp factor between `0` and `1` you're currently translating the red point on the red line.
 
 By repeating this computation for each frame, you'll have a sense of delay applied to your initial `speed` factor.
 
-#### ⚙️ The _target_ property
-
-Type: `HTML element`
-
-Default value: `null`
-
-##### 📝 Description
-
-The target property will allow you to shift your element relativity from the center of the window to the specified target. This property won't be taken into account without specifying the `position` property.
-
-#### ⚙️ The _position_ property
-
-Type: `String`
-
-Default value: `null`
-
-##### 📝 Description
-
-This property will only take two possible values:
-
-👉 `'top'`
-
-👉 `'bottom'`
-
-Without any `target` specified, the position will be set relatively to the window's top or bottom.
-
-With a `target` specified, the position will be set relatively to the target's top or bottom.
-
-### Make it stick 🍯
-
-In this context the following parameters will be taken into account:
-
-👉 collant
-
-👉 collantOffset
-
-👉 position
-
-👉 target
-
-#### ⚙️ The _collant_ property
-
-Type: `Boolean`
-
-Default value: `false`
-
-##### 📝 Description
-
-Activate sticky positioning relatively to the `target` container.
-
-#### ⚙️ The _collantOffset_ property
-
-Type: `Float` or `String`
-
-Default value: `0`
-
-##### 📝 Description
-
-By default your collant element will be sticky when one of those two conditions is met:
-
-👉 The top of the window reaches the top of the element.
-
-👉 The bottom of the window reaches the bottom of the element.
-
-The `collantOffset` parameter will only offset those two conditions by the given value.
-
-For example, by giving a value of `100` to `collantOffset` and a `position` parameter of `'top'`, the element will be sticky 100 pixels before reaching the current element top.
-
-The result will be a 100 pixels margin between the window's top and the element's top while being sticky.
-
-The accepted value are `Float` which will be directly translated into pixel, or `String` ending by `vh` directly translated to percentage of the window's height.
-
-**Example:**
-
 ```js
-const watched = window.$endgame.alice.watch({
-  element,
-  options: {
-    collant: true,
-    collantOffset: 100,
-    // or
-    collantOffset: '10vh',
-  },
+// Example
+const ids = $endgame.alice.speed.watch(htmlElements, {
+  speed: 2,
+  lerp: 0.9,
 });
 ```
-
-#### ⚙️ The _target_ property
-
-Type: `HTML element`
-
-Default value: `null`
-
-##### 📝 Description
-
-The `target` property will be the box in which your _collant_ element will stick. Thus, the box shall have a greater height than its curent height. **Otherwise the element won't be sticky**.
-
-Without any `target` specified, collant element won't be sticky.
-
-#### ⚙️ The _position_ property
-
-Type: `String`
-
-Default value: `null`
-
-##### 📝 Description
-
-This property will only take two possible values:
-
-👉 `'top'`
-
-👉 `'bottom'`
-
-With a `target` specified, the `collantOffset` will be set relatively to the target's top or bottom.
