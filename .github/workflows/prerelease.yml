@@ -62,7 +62,7 @@ jobs:
       - name: Authenticate with NPM registry 🔑
         run: |
           yarn logout
-          echo "@endgame:registry=http://registry.npmjs.org/" >> .npmrc
+          echo "@endgame:registry=https://registry.npmjs.org/" >> .npmrc
           echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> .npmrc
           npm whoami
         env:
