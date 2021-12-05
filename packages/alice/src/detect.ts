@@ -291,7 +291,7 @@ export class Detect extends Tween {
         delete this._detectTweensList[id];
       });
     } else {
-      // Here ids is considered as a single Catalyst id
+      // Here ids is considered as a single detect tween id
       delete this._detectTweensList[ids];
     }
 

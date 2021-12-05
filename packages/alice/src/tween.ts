@@ -89,11 +89,6 @@ export abstract class Tween {
     triggerOffsets: [0, 0],
     lerpAmount: 0,
     speedAmount: 0,
-    collantOffset: {
-      offset: 0,
-      offsetViewport: '0vh',
-    },
-    position: 'top',
   };
 
   /**
@@ -107,7 +102,6 @@ export abstract class Tween {
     itemId: null,
     classes: [],
     boundings: null,
-    targetBoundings: null,
     coordinates: {
       x: 0,
       y: 0,
@@ -118,11 +112,6 @@ export abstract class Tween {
     // In view not considering triggerOffset for speed computations
     isInSpeedView: false,
     lerpDone: true,
-    collantEvent: '',
-    collant: {
-      parsedOffset: 0,
-      scrollOffset: 0,
-    },
   };
 
   /**
@@ -155,7 +144,6 @@ export abstract class Tween {
 
       // Reset boundings since they're based on the window's layout
       item.state.boundings = Tween._defaultState.boundings;
-      item.state.targetBoundings = Tween._defaultState.targetBoundings;
 
       // Reset the transform coordinates since the transforms are cleared during the resize
       item.state.coordinates.x = Tween._defaultState.coordinates.x;
@@ -168,13 +156,7 @@ export abstract class Tween {
       // Reset lerp since the transforms have been cleared right before
       item.state.lerpDone = Tween._defaultState.lerpDone;
 
-      // NOTE: In view are computed during the scroll. The resize handler force a scroll update at the end of the function. So, no need to reset inview values.
-
-      item.state.collant.parsedOffset =
-        Tween._defaultState.collant.parsedOffset;
-      item.state.collant.scrollOffset =
-        Tween._defaultState.collant.scrollOffset;
-      item.state.collantEvent = Tween._defaultState.collantEvent;
+      // NOTE: In view are computed during the scroll. The resize handler forces a scroll update at the end of the function. So, no need to reset inview values.
     });
 
     raf(() => {
@@ -326,17 +308,6 @@ export abstract class Tween {
               removeStringFromArray('--in-view', target.classes);
             }
           }
-        }
-
-        // collantEvent
-        if (prop === 'collantEvent' && target.collantEvent !== propValue) {
-          const eventId = makeEventId(target.itemId, propValue);
-          this._emit(eventId, {
-            itemIndex,
-          });
-
-          removeStringFromArray(`--${target.collantEvent}`, target.classes);
-          target.classes.push(`--${propValue}`);
         }
 
         // classes updates

@@ -42,7 +42,7 @@ export class Alice {
   static _detect: Detect = new Detect();
 
   /**
-   * @description Object allowing DOM objects detection.
+   * @description Object allowing DOM objects detection and CSS transform modifications.
    * @static
    * @type {Speed}
    * @memberof Alice
@@ -114,8 +114,6 @@ export class Alice {
         Speed._eva = Alice._eva;
 
         Alice._speed.initialize();
-      } else if (pluginName === 'collant') {
-        // this._collant.initialize();
       }
     });
   }
@@ -311,8 +309,4 @@ export class Alice {
   get speed(): Speed {
     return Alice._speed;
   }
-
-  // get collant(): {
-  //   return
-  // }
 }

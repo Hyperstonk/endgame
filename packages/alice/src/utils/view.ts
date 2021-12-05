@@ -15,21 +15,26 @@ export const getBoundings = async (
   element: HTMLElement,
   scrollTop: number
 ): Promise<Boundings> => {
-  return await fastdom.measure(() => {
-    const { top, right, bottom, left, width, height, x, y } = <Boundings>(
-      element.getBoundingClientRect()
-    );
-    return {
-      top: top + scrollTop,
-      right,
-      bottom: bottom + scrollTop,
-      left,
-      width,
-      height,
-      x,
-      y: y + scrollTop,
-    };
-  });
+  const {
+    top,
+    right,
+    bottom,
+    left,
+    width,
+    height,
+    x,
+    y,
+  } = await fastdom.measure(() => <Boundings>element.getBoundingClientRect());
+  return {
+    top: top + scrollTop,
+    right,
+    bottom: bottom + scrollTop,
+    left,
+    width,
+    height,
+    x,
+    y: y + scrollTop,
+  };
 };
 
 export const getTriggerOffset = (

@@ -9,17 +9,11 @@ export interface TweenStateDefault {
   itemId: string | null;
   classes: string[];
   boundings: Boundings | null;
-  targetBoundings: null;
   coordinates: TweenCoordinates;
   triggerOffsetComputed: boolean;
   isInView: boolean;
   isInSpeedView: boolean;
   lerpDone: boolean;
-  collantEvent: string;
-  collant: {
-    parsedOffset: number;
-    scrollOffset: number;
-  };
 }
 
 export interface TweenState extends TweenStateDefault {
@@ -34,11 +28,6 @@ export interface TweenOptions {
   triggerOffsets: TriggerOffsets;
   lerpAmount: number;
   speedAmount: number;
-  collantOffset: {
-    offset: number;
-    offsetViewport: string;
-  };
-  position: string;
 }
 
 type InputOffset = string | number;
@@ -50,11 +39,6 @@ export interface InputTweenOptions {
   triggerOffset?: InputTriggerOffset;
   lerp?: number;
   speed?: number;
-  collantOffset?: {
-    offset?: number;
-    offsetViewport?: string;
-  };
-  position?: string;
 }
 
 export interface TweenObject {
