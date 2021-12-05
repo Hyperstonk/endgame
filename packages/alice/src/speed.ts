@@ -1,6 +1,4 @@
 import throttle from 'lodash/throttle';
-import fastdomCore from 'fastdom';
-import fastdomPromised from 'fastdom/extensions/fastdom-promised';
 import { Eva } from '@endgame/eva';
 
 import { AnyFunction } from './contracts';
@@ -12,9 +10,6 @@ import {
   clearTransform,
   lerpCoordinates,
 } from './utils/transform';
-
-// fastdom extension
-const fastdom = fastdomCore.extend(fastdomPromised);
 
 export class Speed extends Tween {
   /**
@@ -60,8 +55,6 @@ export class Speed extends Tween {
 
   private _ticking = false;
 
-  private _triggerOffsetComputed = false;
-
   /**
    * @description Ensuring that we'll complete lerp transformations even if the user is not scrolling anymore.
    * @private
@@ -90,7 +83,7 @@ export class Speed extends Tween {
    */
 
   private async _computeDetection(tween: TweenObject): Promise<void> {
-    // NOTE: Early returns with if statements without curly brackets allow the browser to parse js. Thus, getBoudingClientRect was calling a style recalculation even if it as not used.
+    // NOTE: Early returns with if statements without curly brackets allow the browser to parse js. Thus, getBoudingClientRect was calling a style recalculation even if it was not used.
 
     if (!tween.state.boundings) {
       /**
@@ -104,21 +97,24 @@ export class Speed extends Tween {
       );
     }
 
-    if (!this._triggerOffsetComputed) {
-      this._triggerOffsetComputed = true;
-
-      tween.options.triggerOffsets = getTriggerOffset(
-        tween,
-        tween.state.boundings
-      );
-    }
-
     const { boundings, coordinates } = tween.state;
-    const { triggerOffsets } = tween.options;
     const { height: windowHeight } = Speed._eva.view.data;
 
-    // Computing in view detection for each tween.
-    if (tween.options.addClass) {
+    // If not once or not already in view.
+    if (!tween.options.once || !tween.state.isInView) {
+      if (!tween.state.triggerOffsetComputed) {
+        // Set trigger offset computation to true if the element's detection have been computed once.
+        tween.state.triggerOffsetComputed = true;
+
+        tween.options.triggerOffsets = getTriggerOffset(
+          tween,
+          tween.state.boundings
+        );
+      }
+
+      const { triggerOffsets } = tween.options;
+
+      // Computing in view detection for each tween.
       tween.state.isInView = isInView(
         Speed._reactor.data.scrollTop,
         windowHeight,
@@ -144,11 +140,11 @@ export class Speed extends Tween {
    * @author Alphability <albanmezino@gmail.com>
    * @private
    * @param {TweenObject} tween
-   * @returns {void}
+   * @returns {Promise<void>}
    * @memberof Speed
    */
 
-  private _computeSpeed(tween: TweenObject): void {
+  private async _computeSpeed(tween: TweenObject): Promise<void> {
     if (!tween.state.isInSpeedView) {
       return;
     }
@@ -164,12 +160,13 @@ export class Speed extends Tween {
     }
 
     // Normal position when the element is at the center of the window
-    const scrollMiddle = Speed._reactor.data.scrollTop + window.innerHeight / 2;
+    const { height: windowHeight } = Speed._eva.view.data;
+    const scrollMiddle = Speed._reactor.data.scrollTop + windowHeight / 2;
     const tweenMiddle = boundings.y + boundings.height / 2;
 
     // Computing the transform value and applying it to the element.
     const transformValue = (scrollMiddle - tweenMiddle) * speedAmount;
-    tween.state.coordinates = lerpCoordinates(element, lerpAmount, {
+    tween.state.coordinates = await lerpCoordinates(element, lerpAmount, {
       x: 0,
       y: transformValue,
     });
@@ -184,7 +181,7 @@ export class Speed extends Tween {
    * @author Alphability <albanmezino@gmail.com>
    * @private
    * @param {TweenObject} tween
-   * @returns {Promise<void>}
+   * @returns {void}
    * @memberof Speed
    */
   private async _applySpeed(tween: TweenObject): Promise<void> {
@@ -197,9 +194,7 @@ export class Speed extends Tween {
       return;
     }
 
-    await fastdom.mutate(() => {
-      applyTransform(element, coordinates);
-    });
+    await applyTransform(element, coordinates);
   }
 
   /**
@@ -214,24 +209,23 @@ export class Speed extends Tween {
       return;
     }
 
-    const speedTweensArray = Object.values(this._speedTweensList);
-
     // Register scroll tick
     this._ticking = true;
 
+    const speedTweensArray = Object.values(this._speedTweensList);
+
     const speedMeasurementPromises = speedTweensArray.map(async (tween) => {
       await this._computeDetection(tween);
-      this._computeSpeed(tween);
+      await this._computeSpeed(tween);
     });
-
     await Promise.all(speedMeasurementPromises);
 
     this._lerpDone = !speedTweensArray.filter(({ state }) => !state.lerpDone)
       .length;
 
-    const speedMutationPromises = speedTweensArray.map(
-      async (tween) => await this._applySpeed(tween)
-    );
+    const speedMutationPromises = speedTweensArray.map(async (tween) => {
+      await this._applySpeed(tween);
+    });
     await Promise.all(speedMutationPromises);
 
     /**
@@ -246,14 +240,14 @@ export class Speed extends Tween {
     }
   }, Speed._sixtyFpsToMs);
 
-  private _handleSpeedResize(): void {
-    // Will recompute offsets
-    this._triggerOffsetComputed = false;
+  /**
+   * @description Handling tweens specific features when window resizes.
+   * @author Alphability <albanmezino@gmail.com>
+   * @private
+   * @memberof Speed
+   */
 
-    /**
-     * ⚡ Avoid memory leak
-     * Early return if there is no items to detect.
-     */
+  private _handleSpeedResize(): void {
     Object.values(this._speedTweensList).forEach((tween) => {
       clearTransform(tween.element);
     });
@@ -285,24 +279,32 @@ export class Speed extends Tween {
           return;
         }
 
-        // Clear transforms before cleaning tweens
-        this._handleSpeedResize();
-
-        // Handling all tweens global reset during resize (debounced by using static method).
-        Tween._handleResize();
+        // Update tweens positions and specific features.
+        this.update();
       },
       outerHeight: (val) => {
         if (!val) {
           return;
         }
 
-        // Clear transforms before cleaning tweens
-        this._handleSpeedResize();
-
-        // Handling all tweens global reset during resize (debounced by using static method).
-        Tween._handleResize();
+        // Update tweens positions and specific features.
+        this.update();
       },
     });
+  }
+
+  /**
+   * @description Update tweens positions and specific features.
+   * @author Alphability <albanmezino@gmail.com>
+   * @memberof Speed
+   */
+
+  public update(): void {
+    // Clear transforms before cleaning tweens
+    this._handleSpeedResize();
+
+    // Handling all tweens global reset during resize (debounced by using static method).
+    Tween._handleResize();
   }
 
   /**
@@ -327,7 +329,7 @@ export class Speed extends Tween {
    * @memberof Speed
    */
 
-  public add(element: HTMLElement, options: InputTweenOptions): string;
+  public add(element: HTMLElement, options?: InputTweenOptions): string;
 
   /**
    * @description Adding new tweens to the detection list.
@@ -338,15 +340,15 @@ export class Speed extends Tween {
    * @memberof Speed
    */
 
-  public add(elements: HTMLElement[], options: InputTweenOptions): string[];
+  public add(elements: HTMLElement[], options?: InputTweenOptions): string[];
 
   public add(
     elements: HTMLElement | HTMLElement[],
-    options: InputTweenOptions
+    options: InputTweenOptions = {}
   ): string | string[] {
     const ids = super._add(elements, options);
 
-    // Update detect tweens list after registering a new element
+    // Update speed tweens list after registering a new element
     const idsList = Array.isArray(ids) ? ids : [ids];
     idsList.forEach((id) => {
       this._speedTweensList[id] = Speed._list[id];
@@ -358,14 +360,34 @@ export class Speed extends Tween {
   /**
    * @description Allowing us to hook on a specific event.
    * @author Alphability <albanmezino@gmail.com>
-   * @param {...[eventName: string, ids: string[], func: AnyFunction]} args
+   * @param {string} eventName
+   * @param {string} id
+   * @param {AnyFunction} func
    * @returns {Speed}
    * @memberof Speed
    */
+
+  public on(eventName: string, id: string, func: AnyFunction): Speed;
+
+  /**
+   * @description Allowing us to hook on a specific event.
+   * @author Alphability <albanmezino@gmail.com>
+   * @param {string} eventName
+   * @param {string[]} ids
+   * @param {AnyFunction} func
+   * @returns {Speed}
+   * @memberof Speed
+   */
+
+  public on(eventName: string, ids: string[], func: AnyFunction): Speed;
+
   public on(
-    ...args: [eventName: string, ids: string[], func: AnyFunction]
+    eventName: string,
+    ids: string | string[],
+    func: AnyFunction
   ): Speed {
-    super._on(...args);
+    const idsList = Array.isArray(ids) ? ids : [ids];
+    super._on(eventName, idsList, func);
 
     return this;
   }
@@ -385,7 +407,7 @@ export class Speed extends Tween {
         delete this._speedTweensList[id];
       });
     } else {
-      // Here ids is considered as a single Catalyst id
+      // Here ids is considered as a single speed tween id
       delete this._speedTweensList[ids];
     }
 

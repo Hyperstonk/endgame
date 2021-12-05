@@ -21,7 +21,7 @@ export class Alice {
    * @memberof Alice
    */
 
-  static _reactor: Calvin = new Calvin({ scrollTop: 0, isScrolling: false });
+  static _reactor: Calvin = new Calvin({ scrollTop: -1, isScrolling: false });
 
   /**
    * @description Object allowing to watch view data.
@@ -42,7 +42,7 @@ export class Alice {
   static _detect: Detect = new Detect();
 
   /**
-   * @description Object allowing DOM objects detection.
+   * @description Object allowing DOM objects detection and CSS transform modifications.
    * @static
    * @type {Speed}
    * @memberof Alice
@@ -65,6 +65,13 @@ export class Alice {
    */
 
   private _refreshScroll = false;
+
+  /**
+   * @description Array of registered plugins names.
+   * @private
+   * @type {string[]}
+   * @memberof Alice
+   */
 
   private _optionsPluginsList: string[] = [];
 
@@ -107,8 +114,6 @@ export class Alice {
         Speed._eva = Alice._eva;
 
         Alice._speed.initialize();
-      } else if (pluginName === 'collant') {
-        // this._collant.initialize();
       }
     });
   }
@@ -245,6 +250,23 @@ export class Alice {
   }
 
   /**
+   * @description Update tweens positions and specific features.
+   * @author Alphability <albanmezino@gmail.com>
+   * @returns {void}
+   * @memberof Alice
+   */
+
+  public update(): void {
+    // We can't boot scroll values if Alice has not been initialized.
+    if (!this._isInitialized) {
+      return;
+    }
+
+    Alice._detect.update();
+    Alice._speed.update();
+  }
+
+  /**
    * @description Reactive scroll properties object's getter.
    * @readonly
    * @type {Calvin}
@@ -287,8 +309,4 @@ export class Alice {
   get speed(): Speed {
     return Alice._speed;
   }
-
-  // get collant(): {
-  //   return
-  // }
 }

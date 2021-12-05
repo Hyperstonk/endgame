@@ -317,8 +317,19 @@ export default class Package {
     const edges = createEdges(imageDependencies);
     const packagesNamesOrdered = topologicalSort(edges);
 
-    // Returning the packages ordered based on their internal dependencies.
-    return packagesNamesOrdered.map((pkgName) => packages[pkgName]);
+    const areNotDeps = Object.keys(imageDependencies)
+      .filter((pkgName) => !packagesNamesOrdered.includes(pkgName))
+      .map((notDepPkgName) => {
+        return packages[notDepPkgName];
+      });
+
+    // The packages ordered based on their internal dependencies.
+    const orderedPackages = packagesNamesOrdered.map(
+      (pkgName) => packages[pkgName]
+    );
+
+    // Returning the packages ordered based on their internal dependencies (first the ones not used as dependencies by other packages).
+    return [...areNotDeps, ...orderedPackages];
   }
 
   public getOptions(): PackageOptions {

@@ -1,31 +1,13 @@
 # Endgame
 
-## Package creation
+Endgame uses _Lerna_ in order to manage multiple packages in only one repo.
 
-If you want your new package `@endgame/[insert-name]` to work you'll need to create a directory inside the `packages` folder.
+These packages are _"**npm scoped packages**"_ like _@babel/core_.
 
-Then init a `package.json` inside it and change some things (see belows).
+## The packages
 
-```json
-{
-  "name": "@endgame/[insert-name-here]",
-  "version": "0.0.0",
-  "description": "Add a description",
-  "repository": "MBDW-Studio/endgame",
-  "author": "Mental Breakdown <hello@mentalbreakdown.studio> (https://mentalbreakdown.studio)",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "files": ["dist/*.js", "dist/*.js.map", "dist/*.d.ts"],
-  "scripts": {
-    "watch": "tsc -w",
-    "test": "jest __tests__ --collectCoverage --runInBand",
-    "test:watch": "jest __tests__ --watchAll --runInBand"
-  },
-  "devDependencies": {},
-  "dependencies": {},
-  "publishConfig": {
-    "access": "restricted"
-  },
-  "license": "MIT"
-}
-```
+👉 [@endgame/alice](https://github.com/MBDW-Studio/endgame/tree/main/packages/alice)
+
+👉 [@endgame/calvin](https://github.com/MBDW-Studio/endgame/tree/main/packages/calvin)
+
+👉 [@endgame/eva](https://github.com/MBDW-Studio/endgame/tree/main/packages/eva)

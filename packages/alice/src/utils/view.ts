@@ -15,53 +15,90 @@ export const getBoundings = async (
   element: HTMLElement,
   scrollTop: number
 ): Promise<Boundings> => {
-  return await fastdom.measure(() => {
-    const { top, right, bottom, left, width, height, x, y } = <Boundings>(
-      element.getBoundingClientRect()
-    );
-    return {
-      top: top + scrollTop,
-      right,
-      bottom: bottom + scrollTop,
-      left,
-      width,
-      height,
-      x,
-      y: y + scrollTop,
-    };
-  });
+  const {
+    top,
+    right,
+    bottom,
+    left,
+    width,
+    height,
+    x,
+    y,
+  } = await fastdom.measure(() => <Boundings>element.getBoundingClientRect());
+  return {
+    top: top + scrollTop,
+    right,
+    bottom: bottom + scrollTop,
+    left,
+    width,
+    height,
+    x,
+    y: y + scrollTop,
+  };
 };
 
 export const getTriggerOffset = (
   { inputOptions: { triggerOffset } }: TweenObject,
   boundings: Boundings
 ): TriggerOffsets => {
-  const inputOffset = !Array.isArray(triggerOffset)
-    ? [triggerOffset, triggerOffset]
-    : triggerOffset;
+  const defaultValues: TriggerOffsets = [0, 0];
 
-  const {
-    top: triggerOffsetTop,
-    bottom: triggerOffsetBottom,
-  } = inputOffset.reduce(
-    (acc, offset, index) => {
-      let parsedOffset = null;
-      const key = index === 0 ? 'top' : 'bottom';
-      if (typeof offset === 'number' && !isNaN(offset)) {
-        parsedOffset = offset;
-      } else if (typeof offset === 'string' && offset.endsWith('vh')) {
-        parsedOffset =
-          parseFloat(offset.replace('vh', '')) * (window.innerHeight / 100);
-      } else if (typeof offset === 'string' && offset.endsWith('%')) {
-        parsedOffset =
-          parseInt(offset.replace('%', ''), 10) * (boundings.height / 100);
+  if (!triggerOffset) {
+    return defaultValues;
+  }
+
+  let inputOffset = [triggerOffset, triggerOffset];
+
+  try {
+    if (Array.isArray(triggerOffset)) {
+      // Throw if more than two values.
+      if (triggerOffset.length !== 2) {
+        throw new Error(
+          'One of your triggerOffset option contains an array with less or more than two values.'
+        );
       }
-      return { ...acc, [key]: parsedOffset };
-    },
-    { top: 0, bottom: 0 }
-  );
 
-  return [triggerOffsetTop, triggerOffsetBottom];
+      inputOffset = triggerOffset;
+    }
+
+    const {
+      top: triggerOffsetTop,
+      bottom: triggerOffsetBottom,
+    } = inputOffset.reduce(
+      (acc, offset, index) => {
+        let parsedOffset = 0;
+        const key = index === 0 ? 'top' : 'bottom';
+
+        if (typeof offset === 'number' && !isNaN(offset)) {
+          parsedOffset = offset;
+        } else if (
+          typeof offset === 'string' &&
+          offset.match(/^[0-9]{1,}vh$/g)
+        ) {
+          parsedOffset =
+            parseFloat(offset.replace('vh', '')) * (window.innerHeight / 100);
+        } else if (
+          typeof offset === 'string' &&
+          offset.match(/^[0-9]{1,}%$/g)
+        ) {
+          parsedOffset =
+            parseInt(offset.replace('%', ''), 10) * (boundings.height / 100);
+        } else {
+          throw new Error(
+            `There is a problem with the syntax of one of your triggerOffset option: ${triggerOffset}`
+          );
+        }
+        return { ...acc, [key]: parsedOffset };
+      },
+      { top: 0, bottom: 0 }
+    );
+
+    return [triggerOffsetTop, triggerOffsetBottom];
+  } catch (error) {
+    console.error(error);
+  }
+
+  return defaultValues;
 };
 
 export const isInView = (

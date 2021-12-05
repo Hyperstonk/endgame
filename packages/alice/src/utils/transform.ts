@@ -1,15 +1,22 @@
+import fastdomCore from 'fastdom';
+import fastdomPromised from 'fastdom/extensions/fastdom-promised';
 import { TweenCoordinates } from '../contracts/Tween';
+
+// fastdom extension
+const fastdom = fastdomCore.extend(fastdomPromised);
 
 export const lerp = (start: number, end: number, amount: number): number =>
   (1 - amount) * start + amount * end;
 
-export function getTranslate(element: HTMLElement): TweenCoordinates {
+export async function getTranslate(
+  element: HTMLElement
+): Promise<TweenCoordinates> {
   const translate = {
     x: 0,
     y: 0,
   };
 
-  const style = getComputedStyle(element);
+  const style = await fastdom.measure(() => getComputedStyle(element));
   const transform: CSSStyleDeclaration['transform'] =
     // @ts-ignore
     style.transform || style.webkitTransform || style.mozTransform;
@@ -29,16 +36,16 @@ export function getTranslate(element: HTMLElement): TweenCoordinates {
   return translate;
 }
 
-export const lerpCoordinates = (
+export const lerpCoordinates = async (
   element: HTMLElement,
   lerpAmount: number,
   coordinates: TweenCoordinates
-): TweenCoordinates => {
+): Promise<TweenCoordinates> => {
   if (lerpAmount <= 0 || lerpAmount > 1) {
     return coordinates;
   }
 
-  const { x: startX, y: startY } = getTranslate(element);
+  const { x: startX, y: startY } = await getTranslate(element);
 
   return {
     x: lerp(startX, coordinates.x, lerpAmount),
@@ -46,24 +53,29 @@ export const lerpCoordinates = (
   };
 };
 
-export const applyTransform = (
+export const applyTransform = async (
   element: HTMLElement,
   { x, y }: TweenCoordinates
-): void => {
+): Promise<void> => {
+  let transformProp = 'transform';
+  let willChangeProp = 'transform';
+  if (!(transformProp in element.style) && 'msTransform' in element.style) {
+    transformProp = 'msTransform';
+    willChangeProp = '-ms-transform';
+  }
+
   const transformValue = `matrix3d(1,0,0.00,0,0.00,1,0.00,0,0,0,1,0,${x},${y},0,1)`;
 
-  element.style.willChange = 'transform';
-
-  // GSAP don't use the following two.
-  element.style.webkitTransform = transformValue;
-  // @ts-ignore
-  element.style.msTransform = transformValue;
-
-  element.style.transform = transformValue;
+  await fastdom.mutate(() => {
+    element.style.willChange = willChangeProp;
+    // @ts-ignore
+    element.style[transformProp] = transformValue;
+  });
 };
 
-export const clearTransform = (element: HTMLElement): void => {
-  element.style.removeProperty('webkitTransform');
-  element.style.removeProperty('msTransform');
-  element.style.removeProperty('transform');
+export const clearTransform = async (element: HTMLElement): Promise<void> => {
+  await fastdom.mutate(() => {
+    element.style.removeProperty('msTransform');
+    element.style.removeProperty('transform');
+  });
 };
