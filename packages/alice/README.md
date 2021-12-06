@@ -82,7 +82,7 @@ mounted() {
 
 ## The basics
 
-Four basic methods will help you handle ALICE basic features lifecycle.
+Four basic methods will help you handle ALICE's basic features lifecycle.
 
 - initialize: Initialize all ALICE's features.
 - bootScrollValues: Boot scroll event initial values (handy when changing page).
@@ -155,7 +155,7 @@ mounted() {
 
 With the update function you'll be able to force update ALICE's global context.
 
-By context we mean:
+By global context we mean:
 
 👉 Re-compute the total distance scrolled (see [_scrollTop_](#scrollTop)).
 
@@ -185,7 +185,7 @@ mounted(){
 
 ### The _destroy_ method
 
-The `destroy` method will remove all [_tweens_](#the-tweens) and their logic. Then it will remove the scroll object instance and all its listeners. Finally, it will destroy the [EVA](https://github.com/MBDW-Studio/endgame/tree/main/packages/eva) instance used under the hood.
+The `destroy` method will remove all [_tweens_](#the-tweens) and their logic. Then, it will remove the scroll object instance and all its listeners. Finally, it will destroy the [EVA](https://github.com/MBDW-Studio/endgame/tree/main/packages/eva) instance used under the hood.
 
 Everything will be ready for garbage collection 👌
 
@@ -291,7 +291,7 @@ See [EVA](https://github.com/MBDW-Studio/endgame/tree/main/packages/eva) to lear
 
 ### Detect
 
-The detect object will enable you to detect HTML elements with ease. These detected elements will be reffered as _tweens_ later on.
+The `detect` object will enable you to detect HTML elements with ease. These detected elements will be reffered as _tweens_ later on.
 
 You'll find this object at `$endgame.alice.detect`.
 
@@ -301,7 +301,7 @@ You'll find this object at `$endgame.alice.detect`.
 
 ### Speed
 
-The speed object will enable you to detect HTML elements with ease. These detected elements will be reffered as _tweens_ later on.
+The `speed` object will enable you to detect HTML elements with ease. These detected elements will be reffered as _tweens_ later on.
 
 You'll find this object at `$endgame.alice.speed`.
 
@@ -402,7 +402,7 @@ const id = $endgame.alice.detect.watch(htmlElement, {
 
 > 🧰 The options in context
 >
-> There is some options that you can apply to your watched element. Instead of listing all of them, we'll see them depending on what you want to achieve.
+> There are some options that you can apply to your watched element. Instead of listing all of them, we'll see them depending on what you want to achieve.
 
 ### 🔍 Elements detection
 
@@ -424,7 +424,7 @@ Default value: `true`
 
 ##### 📝 Description
 
-By default an `--in-view` class will be added to your HTML elements as they enter in the viewport. The class is automatically removed when they leave it.
+By default an `--in-view` class will be added to your HTML elements as they enter the viewport. The class is automatically removed when your HTML elements leave the latter.
 
 By setting `addClass` to `false`, this feature will be disabled for all the tweens added by the `add` function.
 
@@ -443,7 +443,7 @@ Default value: `false`
 
 ##### 📝 Description
 
-Decide whether or not watching the element entrance multiple times. By default any in/out-view state change will be recorded.
+Decide whether or not the elements entrance will be watched multiple times. By default any in/out-view state change will be recorded.
 
 By setting `once` to `true`, only the first in-view state will be recorded. No following change will  
 take effect.
