@@ -1,8 +1,10 @@
 {
-  "version": "1.0.7",
+  "version": "1.0.8-alpha.0",
   "npmClient": "yarn",
   "useWorkspaces": true,
-  "packages": ["packages/*"],
+  "packages": [
+    "packages/*"
+  ],
   "command": {
     "publish": {
       "verifyAccess": false,

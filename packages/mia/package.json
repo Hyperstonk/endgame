@@ -1,6 +1,6 @@
 {
   "name": "@endgame/mia",
-  "version": "1.0.7",
+  "version": "1.0.8-alpha.0",
   "description": "Make Internet Accessible",
   "repository": "MBDW-Studio/endgame",
   "author": "Mental Breakdown <hello@mentalbreakdown.studio> (https://mentalbreakdown.studio)",
@@ -17,7 +17,7 @@
     "test:watch": "jest __tests__ --watchAll --runInBand"
   },
   "dependencies": {
-    "@endgame/calvin": "^1.0.7"
+    "@endgame/calvin": "^1.0.8-alpha.0"
   },
   "publishConfig": {
     "access": "public"
