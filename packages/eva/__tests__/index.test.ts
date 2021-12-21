@@ -11,7 +11,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  // Resetting Alice instance values before next test.
+  // Resetting Eva instance values before next test.
   global.innerWidth = 0;
   global.dispatchEvent(new Event('resize'));
   eva.destroy();

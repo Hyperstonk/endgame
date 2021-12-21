@@ -168,6 +168,7 @@ export class Eva {
    * @author Alphability <albanmezino@gmail.com>
    * @memberof Eva
    */
+
   public destroy(): void {
     this._detachListeners();
 
@@ -180,6 +181,7 @@ export class Eva {
    * @type {Calvin}
    * @memberof Eva
    */
+
   get view(): Calvin {
     return Eva._reactor;
   }

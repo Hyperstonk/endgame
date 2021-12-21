@@ -1,0 +1,26 @@
+{
+  "name": "@endgame/mia",
+  "version": "1.0.7",
+  "description": "Make Internet Accessible",
+  "repository": "MBDW-Studio/endgame",
+  "author": "Mental Breakdown <hello@mentalbreakdown.studio> (https://mentalbreakdown.studio)",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*.js",
+    "dist/**/*.js.map",
+    "dist/**/*.d.ts"
+  ],
+  "scripts": {
+    "watch": "tsc -w",
+    "test": "jest __tests__ --collectCoverage --runInBand",
+    "test:watch": "jest __tests__ --watchAll --runInBand"
+  },
+  "dependencies": {
+    "@endgame/calvin": "^1.0.7"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT"
+}
