@@ -61,7 +61,7 @@ export class Calvin {
 
   /**
    * Creates an instance of Calvin.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @param {Record<string, any>} data
    * @memberof Calvin
    */
@@ -71,7 +71,7 @@ export class Calvin {
 
   /**
    * @description The method that initialize the Proxy that will contain the reactive properties. The method contains the implementation of the reactive properties' getters and setters logic.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @private
    * @param {Record<string, any>} data
    * @memberof Calvin
@@ -138,7 +138,7 @@ export class Calvin {
 
   /**
    * @description Calls the watchers of the involved reactive property.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @private
    * @param {string} property
    * @param {*} value
@@ -159,7 +159,7 @@ export class Calvin {
 
   /**
    * @description Registers the dependent (computed property) as a dependency of the involved reactive property.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @private
    * @param {string} property
    * @memberof Calvin
@@ -178,7 +178,7 @@ export class Calvin {
 
   /**
    * @description Updates all the dependents of the involved reactive property.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @private
    * @param {string} property
    * @memberof Calvin
@@ -193,7 +193,7 @@ export class Calvin {
 
   /**
    * @description Stores the computed function of the computed property to be. Initializes its value right after storing the function.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @private
    * @param {string} property
    * @param {Computed} computed
@@ -214,7 +214,7 @@ export class Calvin {
 
   /**
    * @description Stores the watcher function of a reactive property.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @private
    * @param {string} property
    * @param {Watcher} watcher
@@ -238,7 +238,7 @@ export class Calvin {
 
   /**
    * @description Iterates through an object of computed properties to register them.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @param {Record<string, Computed>} computedFunctions
    * @memberof Calvin
    */
@@ -252,7 +252,7 @@ export class Calvin {
 
   /**
    * @description Iterates through an object of watchers to register them.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @param {Record<string, Watcher>} watchers
    * @memberof Calvin
    */

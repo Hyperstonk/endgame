@@ -124,7 +124,7 @@ export abstract class Tween {
 
   /**
    * @description Handling tweens when window resizes.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @static
    * @memberof Tween
    */
@@ -173,7 +173,7 @@ export abstract class Tween {
 
   /**
    * @description Emitting a notification.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @private
    * @param {string} propertyName
    * @param {*} propertyValue
@@ -195,7 +195,7 @@ export abstract class Tween {
 
   /**
    * @description Method used to attach new functions to events.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @private
    * @param {Record<string, AnyFunction>} notificationsObject
    * @memberof Tween
@@ -213,7 +213,7 @@ export abstract class Tween {
 
   /**
    * @description Tween event subscription.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @private
    * @param {string} eventName
    * @param {string} id
@@ -232,7 +232,7 @@ export abstract class Tween {
 
   /**
    * @description Deleting all notifications for a specific event.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @private
    * @param {string} propertyName
    * @memberof Tween
@@ -269,7 +269,7 @@ export abstract class Tween {
 
   /**
    * @description Reactive fresh tween state through the use of Proxy.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @private
    * @param {HTMLElement} element
    * @param {number} itemIndex
@@ -339,7 +339,7 @@ export abstract class Tween {
 
   /**
    * @description Adding an element to the tween list.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @private
    * @returns {string}
    * @param {HTMLElement} element
@@ -375,7 +375,7 @@ export abstract class Tween {
 
   /**
    * @description Removing a tween from the tweens list.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @private
    * @param {string} id
    * @memberof Tween
@@ -395,7 +395,7 @@ export abstract class Tween {
 
   /**
    * @description Adding one or more tweens to the tweens list.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @param {(HTMLElement | HTMLElement[])} elements
    * @param {TweenOptions} options
    * @returns {(string | string[])}
@@ -418,7 +418,7 @@ export abstract class Tween {
 
   /**
    * @description Allowing us to hook on a specific event.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @param {string} eventName
    * @param {string[]} ids
    * @param {AnyFunction} func
@@ -446,7 +446,7 @@ export abstract class Tween {
 
   /**
    * @description Removing tweens from the tweens list by ids.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @param {string[]} ids
    * @returns {Tween}
    * @memberof Tween

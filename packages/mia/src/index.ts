@@ -3,7 +3,7 @@ import { Calvin } from '@endgame/calvin';
 export class Mia {
   /**
    * @description The focus switch delay in ms.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @static
    * @memberof Mia
    */
@@ -13,7 +13,7 @@ export class Mia {
   /**
    * @description Object allowing the use of reactive data.
    * Storing a11y state values.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @static
    * @type {Calvin}
    * @memberof Mia
@@ -23,7 +23,7 @@ export class Mia {
 
   /**
    * @description The focus event's last target.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @private
    * @type {(HTMLElement | null)}
    * @memberof Mia
@@ -33,7 +33,7 @@ export class Mia {
 
   /**
    * @description Boolean ensuring that we can't initialize multiple a11y listeners.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @private
    * @memberof Mia
    */
@@ -42,7 +42,7 @@ export class Mia {
 
   /**
    * Creates an instance of Mia.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @memberof Mia
    */
 
@@ -53,7 +53,7 @@ export class Mia {
 
   /**
    * @description Removing the focus on the last target.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @private
    * @param {(Event | undefined)} [event=undefined]
    * @memberof Mia
@@ -74,7 +74,7 @@ export class Mia {
 
   /**
    * @description Adding focus on the new target.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @private
    * @param {(EventTarget | null)} target
    * @return {*}  {void}
@@ -109,7 +109,7 @@ export class Mia {
 
   /**
    * @description Handling global HTML elements focus.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @private
    * @param {KeyboardEvent} { key, target }
    * @return {*}  {void}
@@ -131,7 +131,7 @@ export class Mia {
 
   /**
    * @description Initializing the a11y abilities.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @memberof Mia
    */
 
@@ -150,7 +150,7 @@ export class Mia {
 
   /**
    * @description Destroying the listeners.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @memberof Mia
    */
 

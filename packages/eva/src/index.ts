@@ -43,7 +43,7 @@ export class Eva {
 
   /**
    * Creates an instance of Eva.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @memberof Eva
    */
 
@@ -53,7 +53,7 @@ export class Eva {
 
   /**
    * @description Collect window object's values.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @private
    * @memberof Eva
    */
@@ -75,7 +75,7 @@ export class Eva {
 
   /**
    * @description Resize listener handler.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @private
    * @memberof Eva
    */
@@ -87,7 +87,7 @@ export class Eva {
 
   /**
    * @description Adding a class to the document element when resizing.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @private
    * @returns {void}
    * @memberof Eva
@@ -118,7 +118,7 @@ export class Eva {
 
   /**
    * @description Hooks onto the resize event.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @private
    * @memberof Eva
    */
@@ -131,7 +131,7 @@ export class Eva {
 
   /**
    * @description Unhooks from the resize event.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @private
    * @memberof Eva
    */
@@ -143,7 +143,7 @@ export class Eva {
 
   /**
    * @description Initializing the viewport reactive data abilities when the window object is defined.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @memberof Eva
    */
 
@@ -165,7 +165,7 @@ export class Eva {
 
   /**
    * @description Destroying the reactive data object and listeners.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @memberof Eva
    */
 

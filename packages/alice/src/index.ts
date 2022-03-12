@@ -77,7 +77,7 @@ export class Alice {
 
   /**
    * Creates an instance of Alice.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @memberof Alice
    */
 
@@ -89,7 +89,7 @@ export class Alice {
 
   /**
    * @description Method used to initialize the plugins only when window is loaded.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @private
    * @param {string[]} pluginsList
    * @returns {void}
@@ -120,7 +120,7 @@ export class Alice {
 
   /**
    * @description Collect scroll values.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @private
    * @memberof Alice
    */
@@ -134,7 +134,7 @@ export class Alice {
 
   /**
    * @description Scroll listener handler.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @private
    * @memberof Alice
    */
@@ -164,7 +164,7 @@ export class Alice {
 
   /**
    * @description Hooks onto the scroll event.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @private
    * @memberof Alice
    */
@@ -177,7 +177,7 @@ export class Alice {
 
   /**
    * @description Unhooks from the scroll event.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @private
    * @memberof Alice
    */
@@ -189,7 +189,7 @@ export class Alice {
 
   /**
    * @description Initializing the scroll reactive data abilities when the window object is defined.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @memberof Alice
    */
 
@@ -214,7 +214,7 @@ export class Alice {
 
   /**
    * @description Destroying the reactive data object and listeners.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @memberof Alice
    */
 
@@ -235,7 +235,7 @@ export class Alice {
 
   /**
    * @description Initialize the scroll values at the user chosen time (preventing automatic browser scroll on refresh). With is you can choose to load the scroll elements detection after your page's layout is fully loaded.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @memberof Alice
    */
   public bootScrollValues(): void {
@@ -251,7 +251,7 @@ export class Alice {
 
   /**
    * @description Update tweens positions and specific features.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @returns {void}
    * @memberof Alice
    */

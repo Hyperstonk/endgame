@@ -65,7 +65,7 @@ export class Speed extends Tween {
 
   /**
    * Creates an instance of Speed.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @memberof Speed
    */
 
@@ -75,7 +75,7 @@ export class Speed extends Tween {
 
   /**
    * @description Computing tween in view position.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @private
    * @param {TweenObject} tween
    * @returns {Promise<void>}
@@ -137,7 +137,7 @@ export class Speed extends Tween {
 
   /**
    * @description Computing element speed position.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @private
    * @param {TweenObject} tween
    * @returns {Promise<void>}
@@ -178,7 +178,7 @@ export class Speed extends Tween {
 
   /**
    * @description Applying the computed speed position to the element.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @private
    * @param {TweenObject} tween
    * @returns {void}
@@ -199,7 +199,7 @@ export class Speed extends Tween {
 
   /**
    * @description Loop through tweens to compute them.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @private
    * @memberof Speed
    */
@@ -242,7 +242,7 @@ export class Speed extends Tween {
 
   /**
    * @description Handling tweens specific features when window resizes.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @private
    * @memberof Speed
    */
@@ -255,7 +255,7 @@ export class Speed extends Tween {
 
   /**
    * @description Initializing the speed abilities when the window object is defined.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @memberof Speed
    */
 
@@ -295,7 +295,7 @@ export class Speed extends Tween {
 
   /**
    * @description Update tweens positions and specific features.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @memberof Speed
    */
 
@@ -309,7 +309,7 @@ export class Speed extends Tween {
 
   /**
    * @description Destroying the tweens.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @memberof Speed
    */
 
@@ -322,7 +322,7 @@ export class Speed extends Tween {
 
   /**
    * @description Adding new tween to the detection list.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @param {HTMLElement} element
    * @param {InputTweenOptions} options
    * @returns {string}
@@ -333,7 +333,7 @@ export class Speed extends Tween {
 
   /**
    * @description Adding new tweens to the detection list.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @param {HTMLElement[]} elements
    * @param {InputTweenOptions} options
    * @returns {string[]}
@@ -359,7 +359,7 @@ export class Speed extends Tween {
 
   /**
    * @description Allowing us to hook on a specific event.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @param {string} eventName
    * @param {string} id
    * @param {AnyFunction} func
@@ -371,7 +371,7 @@ export class Speed extends Tween {
 
   /**
    * @description Allowing us to hook on a specific event.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @param {string} eventName
    * @param {string[]} ids
    * @param {AnyFunction} func
@@ -394,7 +394,7 @@ export class Speed extends Tween {
 
   /**
    * @description Removing tweens by id.
-   * @author Alphability <albanmezino@gmail.com>
+   * @author AVIIIVII <albanmezino@gmail.com>
    * @param {(string | string[])} ids
    * @returns {Speed}
    * @memberof Speed
